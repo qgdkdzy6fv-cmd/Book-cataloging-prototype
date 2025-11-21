@@ -230,9 +230,6 @@ export const bookService = {
         return null;
       }
 
-      console.log('Existing books count:', existingBooks.length);
-      console.log('Existing books:', existingBooks.map(b => `${b.title} by ${b.author}`));
-
       const normalizeString = (str: string) => {
         return str.toLowerCase()
           .trim()
@@ -242,17 +239,13 @@ export const bookService = {
 
       const existingTitlesAndAuthors = new Set(
         existingBooks.map(book => {
-          const key = `${normalizeString(book.title)}|${normalizeString(book.author)}`;
-          console.log('Existing book key:', key);
-          return key;
+          return `${normalizeString(book.title)}|${normalizeString(book.author)}`;
         })
       );
 
       const existingISBNs = new Set(
         existingBooks.filter(book => book.isbn).map(book => book.isbn)
       );
-
-      console.log('Fetched items from API:', data.items.length);
 
       const availableBooks = data.items.filter((item: any) => {
         const bookInfo = item.volumeInfo;
@@ -262,10 +255,7 @@ export const bookService = {
         const normalizedAuthor = normalizeString(bookInfo.authors.join(', '));
         const titleAuthorKey = `${normalizedTitle}|${normalizedAuthor}`;
 
-        console.log('Checking book:', titleAuthorKey);
-
         if (existingTitlesAndAuthors.has(titleAuthorKey)) {
-          console.log('FILTERED OUT (title/author match):', titleAuthorKey);
           return false;
         }
 
@@ -273,14 +263,11 @@ export const bookService = {
         const isbn10 = bookInfo.industryIdentifiers?.find((id: any) => id.type === 'ISBN_10')?.identifier;
 
         if ((isbn13 && existingISBNs.has(isbn13)) || (isbn10 && existingISBNs.has(isbn10))) {
-          console.log('FILTERED OUT (ISBN match):', titleAuthorKey);
           return false;
         }
 
         return true;
       });
-
-      console.log('Available books after filtering:', availableBooks.length);
 
       if (availableBooks.length === 0) {
         return null;
@@ -291,7 +278,7 @@ export const bookService = {
       const categories = bookInfo.categories || [];
       const description = bookInfo.description || '';
 
-      const suggestion = {
+      return {
         title: bookInfo.title,
         author: bookInfo.authors?.join(', ') || 'Unknown Author',
         genre: this.classifyGenre(categories),
@@ -303,10 +290,6 @@ export const bookService = {
         description: description,
         holiday_category: this.detectHolidayCategory(bookInfo.title, description),
       };
-
-      console.log('Selected suggestion:', `${suggestion.title} by ${suggestion.author}`);
-
-      return suggestion;
     } catch (error) {
       console.error('Error fetching random book suggestion:', error);
       return null;
