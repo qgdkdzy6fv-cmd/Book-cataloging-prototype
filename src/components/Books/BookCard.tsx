@@ -1,4 +1,4 @@
-import { BookOpen, Tag, Calendar, Star, CheckCircle } from 'lucide-react';
+import { BookOpen, Tag, Calendar, Star, Check } from 'lucide-react';
 import type { Book } from '../../types';
 
 interface BookCardProps {
@@ -56,10 +56,9 @@ export function BookCard({ book, onClick, onToggleFavorite, onToggleRead }: Book
           className="absolute top-2 left-2 p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:scale-110 transition-transform"
           aria-label={book.is_read ? 'Mark as unread' : 'Mark as read'}
         >
-          <CheckCircle
+          <Check
             size={20}
-            className={book.is_read ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}
-            fill={book.is_read ? 'currentColor' : 'none'}
+            className={book.is_read ? 'text-green-500 stroke-[3]' : 'text-gray-400 dark:text-gray-500'}
           />
         </button>
       </div>
