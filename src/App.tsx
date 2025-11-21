@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Library, LogIn, LogOut, Download, Search, FolderOpen, Edit2, Check, X } from 'lucide-react';
+import { Library, LogIn, LogOut, Download, Upload, Search, FolderOpen, Edit2, Check, X } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AuthModal } from './components/Auth/AuthModal';
 import { AddBookForm } from './components/Books/AddBookForm';
@@ -8,6 +8,7 @@ import { BookFilters } from './components/Books/BookFilters';
 import { RandomBookPicker } from './components/Books/RandomBookPicker';
 import { BookDetailModal } from './components/Books/BookDetailModal';
 import { ExportModal } from './components/Export/ExportModal';
+import { ImportModal } from './components/Import/ImportModal';
 import { CatalogSelectorModal } from './components/Catalogs/CatalogSelectorModal';
 import { bookService } from './services/bookService';
 import { catalogService } from './services/catalogService';
@@ -24,6 +25,7 @@ function AppContent() {
   const [loading, setLoading] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [exportModalOpen, setExportModalOpen] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
   const [catalogModalOpen, setCatalogModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [bookDetailOpen, setBookDetailOpen] = useState(false);
@@ -211,6 +213,14 @@ function AppContent() {
                 Catalogs
               </button>
 
+              <button
+                onClick={() => setImportModalOpen(true)}
+                className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                <Upload size={18} />
+                Import
+              </button>
+
               {books.length > 0 && (
                 <button
                   onClick={() => setExportModalOpen(true)}
@@ -291,6 +301,12 @@ function AppContent() {
       </main>
 
       <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+      <ImportModal
+        isOpen={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+        catalogId={activeCatalogId}
+        onImportComplete={loadBooks}
+      />
       <ExportModal
         isOpen={exportModalOpen}
         onClose={() => setExportModalOpen(false)}
