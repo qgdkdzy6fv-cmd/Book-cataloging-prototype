@@ -230,11 +230,21 @@ export const bookService = {
         return null;
       }
 
+      console.log('Existing books count:', existingBooks.length);
+      console.log('Existing books:', existingBooks.map(b => `${b.title} by ${b.author}`));
+
+      const normalizeString = (str: string) => {
+        return str.toLowerCase()
+          .trim()
+          .replace(/[^\w\s]/g, '')
+          .replace(/\s+/g, ' ');
+      };
+
       const existingTitlesAndAuthors = new Set(
         existingBooks.map(book => {
-          const normalizedTitle = book.title.toLowerCase().trim().replace(/[^\w\s]/g, '');
-          const normalizedAuthor = book.author.toLowerCase().trim().replace(/[^\w\s]/g, '');
-          return `${normalizedTitle}|${normalizedAuthor}`;
+          const key = `${normalizeString(book.title)}|${normalizeString(book.author)}`;
+          console.log('Existing book key:', key);
+          return key;
         })
       );
 
@@ -242,15 +252,20 @@ export const bookService = {
         existingBooks.filter(book => book.isbn).map(book => book.isbn)
       );
 
+      console.log('Fetched items from API:', data.items.length);
+
       const availableBooks = data.items.filter((item: any) => {
         const bookInfo = item.volumeInfo;
         if (!bookInfo?.title || !bookInfo?.authors) return false;
 
-        const normalizedTitle = bookInfo.title.toLowerCase().trim().replace(/[^\w\s]/g, '');
-        const normalizedAuthor = (bookInfo.authors[0] || '').toLowerCase().trim().replace(/[^\w\s]/g, '');
+        const normalizedTitle = normalizeString(bookInfo.title);
+        const normalizedAuthor = normalizeString(bookInfo.authors.join(', '));
         const titleAuthorKey = `${normalizedTitle}|${normalizedAuthor}`;
 
+        console.log('Checking book:', titleAuthorKey);
+
         if (existingTitlesAndAuthors.has(titleAuthorKey)) {
+          console.log('FILTERED OUT (title/author match):', titleAuthorKey);
           return false;
         }
 
@@ -258,11 +273,14 @@ export const bookService = {
         const isbn10 = bookInfo.industryIdentifiers?.find((id: any) => id.type === 'ISBN_10')?.identifier;
 
         if ((isbn13 && existingISBNs.has(isbn13)) || (isbn10 && existingISBNs.has(isbn10))) {
+          console.log('FILTERED OUT (ISBN match):', titleAuthorKey);
           return false;
         }
 
         return true;
       });
+
+      console.log('Available books after filtering:', availableBooks.length);
 
       if (availableBooks.length === 0) {
         return null;
@@ -273,7 +291,7 @@ export const bookService = {
       const categories = bookInfo.categories || [];
       const description = bookInfo.description || '';
 
-      return {
+      const suggestion = {
         title: bookInfo.title,
         author: bookInfo.authors?.join(', ') || 'Unknown Author',
         genre: this.classifyGenre(categories),
@@ -285,6 +303,10 @@ export const bookService = {
         description: description,
         holiday_category: this.detectHolidayCategory(bookInfo.title, description),
       };
+
+      console.log('Selected suggestion:', `${suggestion.title} by ${suggestion.author}`);
+
+      return suggestion;
     } catch (error) {
       console.error('Error fetching random book suggestion:', error);
       return null;
