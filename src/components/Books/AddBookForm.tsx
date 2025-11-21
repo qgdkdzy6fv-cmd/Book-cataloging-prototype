@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Plus, Loader2 } from 'lucide-react';
 import { bookService } from '../../services/bookService';
 import { useAuth } from '../../contexts/AuthContext';
@@ -14,7 +14,73 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
   const [author, setAuthor] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [authorSuggestions, setAuthorSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const authorInputRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (authorInputRef.current && !authorInputRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const fetchAuthorSuggestions = async () => {
+    if (!title.trim()) {
+      setAuthorSuggestions([]);
+      return;
+    }
+
+    setLoadingSuggestions(true);
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title.trim())}&maxResults=5`
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch suggestions');
+      }
+
+      const data = await response.json();
+
+      if (data.items && data.items.length > 0) {
+        const authors = data.items
+          .map((item: any) => item.volumeInfo.authors?.[0])
+          .filter((author: string | undefined) => author)
+          .filter((author: string, index: number, self: string[]) =>
+            self.indexOf(author) === index
+          );
+        setAuthorSuggestions(authors);
+      } else {
+        setAuthorSuggestions([]);
+      }
+    } catch (error) {
+      console.error('Error fetching author suggestions:', error);
+      setAuthorSuggestions([]);
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
+  const handleAuthorInputFocus = () => {
+    if (title.trim()) {
+      setShowSuggestions(true);
+      if (authorSuggestions.length === 0) {
+        fetchAuthorSuggestions();
+      }
+    }
+  };
+
+  const handleSelectAuthor = (selectedAuthor: string) => {
+    setAuthor(selectedAuthor);
+    setShowSuggestions(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +98,8 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
       await bookService.addBook(user?.id || null, catalogId, bookData, true);
       setTitle('');
       setAuthor('');
+      setAuthorSuggestions([]);
+      setShowSuggestions(false);
       onBookAdded();
     } catch (err: any) {
       setError(err.message || 'Failed to add book');
@@ -60,7 +128,7 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
           />
         </div>
 
-        <div>
+        <div ref={authorInputRef} className="relative">
           <label htmlFor="author" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Author <span className="text-red-500">*</span>
           </label>
@@ -69,10 +137,40 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
             type="text"
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
+            onFocus={handleAuthorInputFocus}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
             placeholder="Enter author name"
             required
           />
+          {showSuggestions && title.trim() && (
+            <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-48 overflow-y-auto">
+              {loadingSuggestions ? (
+                <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                  Loading suggestions...
+                </div>
+              ) : authorSuggestions.length > 0 ? (
+                <>
+                  <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-600">
+                    Suggested authors for "{title}"
+                  </div>
+                  {authorSuggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => handleSelectAuthor(suggestion)}
+                      className="w-full text-left px-3 py-2 hover:bg-blue-50 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white transition-colors"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </>
+              ) : (
+                <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                  No author suggestions found for this title
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
