@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Save, Trash2, BookOpen, Tag as TagIcon, Upload, Image as ImageIcon } from 'lucide-react';
+import { X, Save, Trash2, BookOpen, Tag as TagIcon, Upload, Image as ImageIcon, RotateCcw } from 'lucide-react';
 import { bookService } from '../../services/bookService';
 import { uploadBookCover, deleteBookCover } from '../../services/imageUploadService';
+import { enrichBookData } from '../../services/bookApi';
 import { useAuth } from '../../contexts/AuthContext';
 import type { Book } from '../../types';
 
@@ -19,6 +20,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [resettingImage, setResettingImage] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropZoneRef = useRef<HTMLDivElement>(null);
@@ -199,6 +201,38 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
     }
   };
 
+  const handleResetToDefault = async () => {
+    setResettingImage(true);
+    setError('');
+
+    try {
+      const oldImageUrl = editedBook.cover_image_url;
+      const enrichedData = await enrichBookData(editedBook.title || book.title, editedBook.author || book.author);
+
+      const newCoverUrl = enrichedData.cover_image_url;
+
+      setEditedBook({
+        ...editedBook,
+        cover_image_url: newCoverUrl,
+      });
+
+      await bookService.updateBook(user?.id || null, book.id, {
+        ...editedBook,
+        cover_image_url: newCoverUrl,
+      });
+
+      if (oldImageUrl && oldImageUrl.includes('supabase')) {
+        await deleteBookCover(oldImageUrl, user?.id || null);
+      }
+
+      onUpdate();
+    } catch (err: any) {
+      setError(err.message || 'Failed to reset image to default');
+    } finally {
+      setResettingImage(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
       <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full my-8 relative transition-colors">
@@ -254,7 +288,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                 />
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={uploadingImage}
+                  disabled={uploadingImage || resettingImage}
                   className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
                 >
                   {uploadingImage ? (
@@ -272,10 +306,27 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                 <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
                   Click to browse or drag & drop
                 </p>
+                <button
+                  onClick={handleResetToDefault}
+                  disabled={loading || uploadingImage || resettingImage}
+                  className="w-full flex items-center justify-center gap-2 border border-green-600 text-green-600 px-4 py-2 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                >
+                  {resettingImage ? (
+                    <>
+                      <RotateCcw size={16} className="animate-spin" />
+                      Finding Original...
+                    </>
+                  ) : (
+                    <>
+                      <RotateCcw size={16} />
+                      Reset to Original
+                    </>
+                  )}
+                </button>
                 {editedBook.cover_image_url && (
                   <button
                     onClick={handleRemoveImage}
-                    disabled={loading || uploadingImage}
+                    disabled={loading || uploadingImage || resettingImage}
                     className="w-full flex items-center justify-center gap-2 border border-red-600 text-red-600 px-4 py-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
                   >
                     <X size={16} />
