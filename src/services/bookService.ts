@@ -56,6 +56,7 @@ export const bookService = {
         description: finalData.description || null,
         tags: finalData.tags || [],
         is_manually_edited: false,
+        is_favorite: false,
       })
       .select()
       .single();
@@ -118,8 +119,34 @@ export const bookService = {
     return data;
   },
 
+  async toggleFavorite(userId: string | null, bookId: string): Promise<Book> {
+    if (!userId || !supabase) {
+      const updated = localStorageService.toggleFavorite(bookId);
+      if (!updated) throw new Error('Book not found');
+      return updated;
+    }
+
+    const book = await this.getBookById(userId, bookId);
+    if (!book) throw new Error('Book not found');
+
+    const { data, error } = await supabase
+      .from('books')
+      .update({ is_favorite: !book.is_favorite })
+      .eq('id', bookId)
+      .eq('user_id', userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
   filterBooks(books: Book[], filters: FilterOptions): Book[] {
     let filtered = [...books];
+
+    if (filters.favorites) {
+      filtered = filtered.filter(book => book.is_favorite);
+    }
 
     if (filters.genre) {
       filtered = filtered.filter(book => book.genre === filters.genre);

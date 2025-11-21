@@ -21,6 +21,7 @@ export interface Book {
   description: string | null;
   tags: string[];
   is_manually_edited: boolean;
+  is_favorite: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -53,6 +54,7 @@ export interface FilterOptions {
   holiday_category?: string;
   tags?: string[];
   search?: string;
+  favorites?: boolean;
 }
 
 export interface UserPreferences {

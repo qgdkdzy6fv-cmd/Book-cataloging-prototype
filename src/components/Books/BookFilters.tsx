@@ -1,4 +1,4 @@
-import { Filter, X } from 'lucide-react';
+import { Filter, X, Star } from 'lucide-react';
 import { useState } from 'react';
 import type { FilterOptions } from '../../types';
 
@@ -19,7 +19,7 @@ export function BookFilters({
 }: BookFiltersProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const hasActiveFilters = filters.genre || filters.holiday_category || (filters.tags && filters.tags.length > 0);
+  const hasActiveFilters = filters.favorites || filters.genre || filters.holiday_category || (filters.tags && filters.tags.length > 0);
 
   const clearFilters = () => {
     onFiltersChange({});
@@ -66,6 +66,28 @@ export function BookFilters({
 
       {isExpanded && (
         <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Favorites
+            </label>
+            <button
+              onClick={() =>
+                onFiltersChange({
+                  ...filters,
+                  favorites: !filters.favorites,
+                })
+              }
+              className={`px-3 py-1 rounded-full text-sm transition-colors flex items-center gap-1 ${
+                filters.favorites
+                  ? 'bg-yellow-500 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              <Star size={16} className={filters.favorites ? 'fill-white' : ''} />
+              Show Favorites Only
+            </button>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Genre

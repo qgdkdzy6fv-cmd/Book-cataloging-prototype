@@ -4,9 +4,10 @@ import type { Book } from '../../types';
 interface BookGridProps {
   books: Book[];
   onBookClick: (book: Book) => void;
+  onToggleFavorite: (bookId: string) => void;
 }
 
-export function BookGrid({ books, onBookClick }: BookGridProps) {
+export function BookGrid({ books, onBookClick, onToggleFavorite }: BookGridProps) {
   if (books.length === 0) {
     return (
       <div className="text-center py-12">
@@ -19,7 +20,12 @@ export function BookGrid({ books, onBookClick }: BookGridProps) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
       {books.map((book) => (
-        <BookCard key={book.id} book={book} onClick={() => onBookClick(book)} />
+        <BookCard
+          key={book.id}
+          book={book}
+          onClick={() => onBookClick(book)}
+          onToggleFavorite={onToggleFavorite}
+        />
       ))}
     </div>
   );

@@ -1,12 +1,18 @@
-import { BookOpen, Tag, Calendar } from 'lucide-react';
+import { BookOpen, Tag, Calendar, Star } from 'lucide-react';
 import type { Book } from '../../types';
 
 interface BookCardProps {
   book: Book;
   onClick: () => void;
+  onToggleFavorite: (bookId: string) => void;
 }
 
-export function BookCard({ book, onClick }: BookCardProps) {
+export function BookCard({ book, onClick, onToggleFavorite }: BookCardProps) {
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleFavorite(book.id);
+  };
+
   return (
     <div
       onClick={onClick}
@@ -27,6 +33,17 @@ export function BookCard({ book, onClick }: BookCardProps) {
         <div className={`absolute inset-0 flex items-center justify-center ${book.cover_image_url ? 'hidden' : ''}`}>
           <BookOpen size={48} className="text-gray-400 dark:text-gray-500" />
         </div>
+
+        <button
+          onClick={handleFavoriteClick}
+          className="absolute top-2 right-2 p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:scale-110 transition-transform"
+          aria-label={book.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+        >
+          <Star
+            size={20}
+            className={book.is_favorite ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400 dark:text-gray-500'}
+          />
+        </button>
       </div>
 
       <div className="p-4">
