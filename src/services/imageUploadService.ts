@@ -5,10 +5,6 @@ export async function uploadBookCover(
   bookId: string,
   file: File
 ): Promise<string> {
-  if (!userId) {
-    throw new Error('User must be authenticated to upload images');
-  }
-
   if (!file.type.startsWith('image/')) {
     throw new Error('File must be an image');
   }
@@ -19,7 +15,8 @@ export async function uploadBookCover(
   }
 
   const fileExt = file.name.split('.').pop();
-  const fileName = `${userId}/${bookId}-${Date.now()}.${fileExt}`;
+  const userFolder = userId || 'guest';
+  const fileName = `${userFolder}/${bookId}-${Date.now()}.${fileExt}`;
 
   const { error: uploadError } = await supabase.storage
     .from('book-covers')
@@ -40,10 +37,6 @@ export async function uploadBookCover(
 }
 
 export async function deleteBookCover(imageUrl: string, userId: string | null): Promise<void> {
-  if (!userId) {
-    throw new Error('User must be authenticated to delete images');
-  }
-
   const url = new URL(imageUrl);
   const pathParts = url.pathname.split('/');
   const fileName = pathParts.slice(pathParts.indexOf('book-covers') + 1).join('/');
