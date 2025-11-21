@@ -112,15 +112,15 @@ export function CatalogSelectorModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto relative">
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-          <h2 className="text-2xl font-bold flex items-center gap-2">
+      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto relative transition-colors">
+        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-6 py-4 flex items-center justify-between transition-colors">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <FolderOpen size={24} />
             My Catalogs
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           >
             <X size={24} />
           </button>
@@ -139,34 +139,34 @@ export function CatalogSelectorModal({
                 key={catalog.id}
                 className={`border-2 rounded-lg p-4 transition-all ${
                   catalog.id === activeCatalogId
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/30'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                 }`}
               >
                 {editingId === catalog.id ? (
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Catalog Name <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         value={editedName}
                         onChange={(e) => setEditedName(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                         placeholder="e.g., Fiction Collection"
                         autoFocus
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Description (optional)
                       </label>
                       <input
                         type="text"
                         value={editedDescription}
                         onChange={(e) => setEditedDescription(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                         placeholder="e.g., My favorite fiction books"
                       />
                     </div>
@@ -182,7 +182,7 @@ export function CatalogSelectorModal({
                       <button
                         onClick={cancelEditing}
                         disabled={loading}
-                        className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-300 disabled:opacity-50"
                       >
                         Cancel
                       </button>
@@ -194,9 +194,9 @@ export function CatalogSelectorModal({
                       onClick={() => handleSelectAndClose(catalog.id)}
                       className="flex-1 text-left"
                     >
-                      <h3 className="font-semibold text-lg">{catalog.name}</h3>
+                      <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{catalog.name}</h3>
                       {catalog.description && (
-                        <p className="text-sm text-gray-600 mt-1">{catalog.description}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{catalog.description}</p>
                       )}
                       {catalog.id === activeCatalogId && (
                         <span className="inline-block mt-2 text-xs bg-blue-600 text-white px-2 py-1 rounded-full">
@@ -208,7 +208,7 @@ export function CatalogSelectorModal({
                       <button
                         onClick={() => startEditing(catalog)}
                         disabled={loading}
-                        className="text-gray-600 hover:text-gray-700 disabled:opacity-50"
+                        className="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-50"
                       >
                         <Edit2 size={18} />
                       </button>
@@ -229,8 +229,8 @@ export function CatalogSelectorModal({
           </div>
 
           {isCreating ? (
-            <form onSubmit={handleCreate} className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-              <h3 className="font-semibold mb-3">Create New Catalog</h3>
+            <form onSubmit={handleCreate} className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Create New Catalog</h3>
               <div className="space-y-3">
                 <div>
                   <label htmlFor="catalog-name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -275,7 +275,7 @@ export function CatalogSelectorModal({
                       setNewName('');
                       setNewDescription('');
                     }}
-                    className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-300"
                   >
                     Cancel
                   </button>
@@ -285,7 +285,7 @@ export function CatalogSelectorModal({
           ) : (
             <button
               onClick={() => setIsCreating(true)}
-              className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 text-gray-600 hover:text-blue-600"
+              className="w-full border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
             >
               <Plus size={20} />
               Create New Catalog
