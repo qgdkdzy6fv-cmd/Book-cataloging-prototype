@@ -18,8 +18,10 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
   const [newTag, setNewTag] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropZoneRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -94,9 +96,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
     });
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const uploadImage = async (file: File) => {
 
     setUploadingImage(true);
     setError('');
@@ -128,6 +128,44 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
         fileInputRef.current.value = '';
       }
     }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await uploadImage(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isEditing && !uploadingImage) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (!isEditing || uploadingImage) return;
+
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please drop an image file');
+      return;
+    }
+
+    await uploadImage(file);
   };
 
   const handleRemoveImage = async () => {
@@ -172,7 +210,24 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
         </button>
 
         <div className="flex flex-col md:flex-row">
-          <div className="md:w-1/3 bg-gray-100 dark:bg-gray-700 p-6 flex flex-col items-center justify-center gap-4 transition-colors">
+          <div
+            ref={dropZoneRef}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`md:w-1/3 bg-gray-100 dark:bg-gray-700 p-6 flex flex-col items-center justify-center gap-4 transition-all relative ${
+              isDragging && isEditing ? 'ring-4 ring-blue-500 ring-opacity-50 bg-blue-50 dark:bg-blue-900/30' : ''
+            }`}
+          >
+            {isDragging && isEditing && (
+              <div className="absolute inset-0 flex items-center justify-center bg-blue-500 bg-opacity-90 z-10 rounded-lg pointer-events-none">
+                <div className="text-center text-white">
+                  <Upload size={48} className="mx-auto mb-2" />
+                  <p className="text-lg font-semibold">Drop image here</p>
+                </div>
+              </div>
+            )}
+
             <div className="relative group">
               {editedBook.cover_image_url ? (
                 <img
@@ -210,10 +265,13 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                   ) : (
                     <>
                       <ImageIcon size={16} />
-                      Upload Image
+                      Upload or Drop Image
                     </>
                   )}
                 </button>
+                <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                  Click to browse or drag & drop
+                </p>
                 {editedBook.cover_image_url && (
                   <button
                     onClick={handleRemoveImage}
