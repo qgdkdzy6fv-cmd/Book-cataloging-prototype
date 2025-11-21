@@ -247,7 +247,8 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
             value={title}
             onChange={(e) => handleTitleChange(e.target.value)}
             onFocus={handleTitleFocus}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white [&:-webkit-autofill]:dark:[-webkit-text-fill-color:white] [&:-webkit-autofill]:dark:[box-shadow:0_0_0_1000px_rgb(55_65_81)_inset]"
+            autoComplete="off"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
             placeholder="Enter book title"
             required
           />
@@ -297,7 +298,8 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
             type="text"
             value={author}
             onChange={(e) => handleAuthorChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white [&:-webkit-autofill]:dark:[-webkit-text-fill-color:white] [&:-webkit-autofill]:dark:[box-shadow:0_0_0_1000px_rgb(55_65_81)_inset]"
+            autoComplete="off"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
             placeholder="Enter author name"
             required
           />
