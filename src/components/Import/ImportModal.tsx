@@ -22,21 +22,24 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
 
   if (!isOpen) return null;
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
+      console.log('File selected:', selectedFile.name, selectedFile.size);
       setFile(selectedFile);
       setStage('upload');
       setImportResult(null);
+
+      await handleAnalyzeFile(selectedFile);
     }
   };
 
-  const handleAnalyze = async () => {
-    if (!file) return;
-
+  const handleAnalyzeFile = async (fileToAnalyze: File) => {
     setImporting(true);
     try {
-      const result = await importService.importFromFile(file);
+      console.log('Analyzing file...');
+      const result = await importService.importFromFile(fileToAnalyze);
+      console.log('Analysis result:', result);
       setImportResult(result);
 
       if (result.success) {
@@ -45,6 +48,7 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
         setStage('upload');
       }
     } catch (error: any) {
+      console.error('Import analyze error:', error);
       setImportResult({
         success: false,
         books: [],
@@ -53,13 +57,24 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
         totalRecords: 0,
         validRecords: 0,
       });
+      setStage('upload');
     } finally {
       setImporting(false);
     }
   };
 
+  const handleAnalyze = async () => {
+    if (!file) return;
+    await handleAnalyzeFile(file);
+  };
+
   const handleImport = async () => {
     if (!importResult || !importResult.success) return;
+
+    if (!catalogId) {
+      alert('No catalog selected. Please select a catalog first.');
+      return;
+    }
 
     setImporting(true);
     setStage('importing');
