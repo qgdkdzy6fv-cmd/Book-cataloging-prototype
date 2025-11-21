@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Library, LogIn, LogOut, Download, Upload, Search, FolderOpen, Edit2, Check, X } from 'lucide-react';
+import { Library, LogIn, LogOut, Download, Upload, Search, FolderOpen, Edit2, Check, X, Sun, Moon } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { useTheme } from './contexts/ThemeContext';
 import { AuthModal } from './components/Auth/AuthModal';
 import { AddBookForm } from './components/Books/AddBookForm';
 import { BookGrid } from './components/Books/BookGrid';
@@ -16,6 +17,7 @@ import type { Book, FilterOptions, Catalog } from './types';
 
 function AppContent() {
   const { user, signOut, isGuest } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const [catalogs, setCatalogs] = useState<Catalog[]>([]);
   const [activeCatalogId, setActiveCatalogId] = useState<string>('');
   const [books, setBooks] = useState<Book[]>([]);
@@ -150,12 +152,12 @@ function AppContent() {
   const activeCatalog = catalogs.find(c => c.id === activeCatalogId);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <header className="bg-white shadow-md">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 transition-colors">
+      <header className="bg-white dark:bg-gray-800 shadow-md transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Library size={32} className="text-blue-600" />
+              <Library size={32} className="text-blue-600 dark:text-blue-400" />
               <div>
                 {isEditingTitle ? (
                   <div className="flex items-center gap-2">
@@ -164,7 +166,7 @@ function AppContent() {
                       value={editedTitle}
                       onChange={(e) => setEditedTitle(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleSaveTitle()}
-                      className="text-2xl font-bold text-gray-900 border-2 border-blue-600 rounded px-2 py-1 focus:outline-none"
+                      className="text-2xl font-bold text-gray-900 dark:text-white dark:bg-gray-700 border-2 border-blue-600 rounded px-2 py-1 focus:outline-none"
                       autoFocus
                     />
                     <button
@@ -182,16 +184,16 @@ function AppContent() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <h1 className="text-2xl font-bold text-gray-900">{activeCatalog?.name || 'My Book Catalog'}</h1>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{activeCatalog?.name || 'My Book Catalog'}</h1>
                     <button
                       onClick={startEditingTitle}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                     >
                       <Edit2 size={18} />
                     </button>
                   </div>
                 )}
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {isGuest ? 'Guest Mode (Local Storage)' : `Signed in as ${user?.email}`}
                 </p>
               </div>
@@ -199,12 +201,20 @@ function AppContent() {
 
             <div className="flex flex-col items-center gap-1">
               <div className="flex items-center gap-1">
-                <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">BETA</span>
+                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded">BETA</span>
               </div>
-              <p className="text-xs text-gray-500">Export your work to avoid losing progress</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Export your work to avoid losing progress</p>
             </div>
 
             <div className="flex items-center gap-3">
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                aria-label="Toggle dark mode"
+              >
+                {isDark ? <Sun size={20} className="text-gray-700 dark:text-gray-200" /> : <Moon size={20} className="text-gray-700" />}
+              </button>
+
               <button
                 onClick={() => setCatalogModalOpen(true)}
                 className="flex items-center gap-2 bg-slate-600 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors"
@@ -242,7 +252,7 @@ function AppContent() {
               ) : (
                 <button
                   onClick={() => signOut()}
-                  className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <LogOut size={18} />
                   Sign Out
@@ -260,13 +270,13 @@ function AppContent() {
           <>
             <div className="mb-6">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search books by title, author, or description..."
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white shadow-sm"
                 />
               </div>
             </div>
@@ -280,7 +290,7 @@ function AppContent() {
             />
 
             <div className="flex items-center justify-between mb-6">
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-300">
                 Showing {filteredBooks.length} of {books.length} book{books.length !== 1 ? 's' : ''}
               </p>
               <RandomBookPicker
@@ -293,7 +303,7 @@ function AppContent() {
 
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-gray-500">Loading books...</p>
+            <p className="text-gray-500 dark:text-gray-400">Loading books...</p>
           </div>
         ) : (
           <BookGrid books={filteredBooks} onBookClick={handleBookClick} />

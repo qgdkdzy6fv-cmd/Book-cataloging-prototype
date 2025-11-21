@@ -38,11 +38,11 @@ export function BookFilters({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6 transition-colors">
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 text-lg font-semibold"
+          className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white"
         >
           <Filter size={20} />
           Filters
@@ -67,7 +67,7 @@ export function BookFilters({
       {isExpanded && (
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Genre
             </label>
             <div className="flex flex-wrap gap-2">
@@ -83,7 +83,7 @@ export function BookFilters({
                   className={`px-3 py-1 rounded-full text-sm transition-colors ${
                     filters.genre === genre
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   {genre}
@@ -94,7 +94,7 @@ export function BookFilters({
 
           {availableHolidays.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Holiday/Season
               </label>
               <div className="flex flex-wrap gap-2">
@@ -110,7 +110,7 @@ export function BookFilters({
                     className={`px-3 py-1 rounded-full text-sm transition-colors ${
                       filters.holiday_category === holiday
                         ? 'bg-green-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     {holiday}
@@ -122,7 +122,7 @@ export function BookFilters({
 
           {availableTags.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Tags
               </label>
               <div className="flex flex-wrap gap-2">
@@ -133,7 +133,7 @@ export function BookFilters({
                     className={`px-3 py-1 rounded-full text-sm transition-colors ${
                       filters.tags?.includes(tag)
                         ? 'bg-orange-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     {tag}
