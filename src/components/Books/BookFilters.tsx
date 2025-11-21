@@ -1,5 +1,5 @@
-import { Filter, X, Star, CheckCircle, Circle } from 'lucide-react';
-import { useState } from 'react';
+import { Filter, X, Star, CheckCircle, Circle, ChevronDown } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 import type { FilterOptions } from '../../types';
 
 interface BookFiltersProps {
@@ -17,9 +17,21 @@ export function BookFilters({
   availableHolidays,
   availableTags,
 }: BookFiltersProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const hasActiveFilters = filters.favorites || filters.read || filters.unread || filters.genre || filters.holiday_category || (filters.tags && filters.tags.length > 0);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const clearFilters = () => {
     onFiltersChange({});
@@ -38,168 +50,132 @@ export function BookFilters({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6 transition-colors">
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white"
-        >
-          <Filter size={20} />
-          Filters
-          {hasActiveFilters && (
-            <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
-              Active
-            </span>
-          )}
-        </button>
-
+    <div ref={dropdownRef} className="relative inline-block">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
+      >
+        <Filter size={18} />
+        <span className="font-medium">Filters</span>
         {hasActiveFilters && (
-          <button
-            onClick={clearFilters}
-            className="text-sm text-red-600 hover:text-red-700 flex items-center gap-1"
-          >
-            <X size={16} />
-            Clear All
-          </button>
+          <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
+            Active
+          </span>
         )}
-      </div>
+        <ChevronDown size={18} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
 
-      {isExpanded && (
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Status
-            </label>
-            <div className="flex flex-wrap gap-2">
+      {isOpen && (
+        <div className="absolute left-0 mt-2 w-96 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50 max-h-[500px] overflow-y-auto">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-800">
+            <h3 className="font-semibold text-gray-900 dark:text-white">Filter Options</h3>
+            {hasActiveFilters && (
               <button
-                onClick={() =>
-                  onFiltersChange({
-                    ...filters,
-                    favorites: !filters.favorites,
-                  })
-                }
-                className={`px-3 py-1 rounded-full text-sm transition-colors flex items-center gap-1 ${
-                  filters.favorites
-                    ? 'bg-yellow-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
+                onClick={clearFilters}
+                className="text-sm text-red-600 hover:text-red-700 flex items-center gap-1"
               >
-                <Star size={16} className={filters.favorites ? 'fill-white' : ''} />
-                Favorites
+                <X size={16} />
+                Clear All
               </button>
-              <button
-                onClick={() =>
-                  onFiltersChange({
-                    ...filters,
-                    read: !filters.read,
-                    unread: false,
-                  })
-                }
-                className={`px-3 py-1 rounded-full text-sm transition-colors flex items-center gap-1 ${
-                  filters.read
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                <CheckCircle size={16} className={filters.read ? 'fill-white' : ''} />
-                Read
-              </button>
-              <button
-                onClick={() =>
-                  onFiltersChange({
-                    ...filters,
-                    unread: !filters.unread,
-                    read: false,
-                  })
-                }
-                className={`px-3 py-1 rounded-full text-sm transition-colors flex items-center gap-1 ${
-                  filters.unread
-                    ? 'bg-gray-600 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                <Circle size={16} />
-                Unread
-              </button>
-            </div>
+            )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Genre
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {availableGenres.map((genre) => (
-                <button
-                  key={genre}
-                  onClick={() =>
+          <div className="p-4 space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Status
+              </label>
+              <select
+                value={filters.favorites ? 'favorites' : filters.read ? 'read' : filters.unread ? 'unread' : ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  onFiltersChange({
+                    ...filters,
+                    favorites: value === 'favorites',
+                    read: value === 'read',
+                    unread: value === 'unread',
+                  });
+                }}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Books</option>
+                <option value="favorites">⭐ Favorites</option>
+                <option value="read">✓ Read</option>
+                <option value="unread">○ Unread</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Genre
+              </label>
+              <select
+                value={filters.genre || ''}
+                onChange={(e) =>
+                  onFiltersChange({
+                    ...filters,
+                    genre: e.target.value || undefined,
+                  })
+                }
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Genres</option>
+                {availableGenres.map((genre) => (
+                  <option key={genre} value={genre}>
+                    {genre}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {availableHolidays.length > 0 && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Holiday/Season
+                </label>
+                <select
+                  value={filters.holiday_category || ''}
+                  onChange={(e) =>
                     onFiltersChange({
                       ...filters,
-                      genre: filters.genre === genre ? undefined : genre,
+                      holiday_category: e.target.value || undefined,
                     })
                   }
-                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                    filters.genre === genre
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {genre}
-                </button>
-              ))}
-            </div>
+                  <option value="">All Holidays/Seasons</option>
+                  {availableHolidays.map((holiday) => (
+                    <option key={holiday} value={holiday}>
+                      {holiday}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {availableTags.length > 0 && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Tags
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {availableTags.map((tag) => (
+                    <button
+                      key={tag}
+                      onClick={() => toggleTag(tag)}
+                      className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                        filters.tags?.includes(tag)
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-
-          {availableHolidays.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Holiday/Season
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {availableHolidays.map((holiday) => (
-                  <button
-                    key={holiday}
-                    onClick={() =>
-                      onFiltersChange({
-                        ...filters,
-                        holiday_category: filters.holiday_category === holiday ? undefined : holiday,
-                      })
-                    }
-                    className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                      filters.holiday_category === holiday
-                        ? 'bg-green-600 text-white'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                    }`}
-                  >
-                    {holiday}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {availableTags.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Tags
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {availableTags.map((tag) => (
-                  <button
-                    key={tag}
-                    onClick={() => toggleTag(tag)}
-                    className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                      filters.tags?.includes(tag)
-                        ? 'bg-orange-600 text-white'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>
