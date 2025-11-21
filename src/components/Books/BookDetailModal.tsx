@@ -16,6 +16,7 @@ interface BookDetailModalProps {
 export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailModalProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedBook, setEditedBook] = useState<Partial<Book>>({});
+  const [displayBook, setDisplayBook] = useState<Book | null>(null);
   const [newTag, setNewTag] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -29,19 +30,20 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
   useEffect(() => {
     if (book) {
       setEditedBook(book);
+      setDisplayBook(book);
       setIsEditing(false);
       setError('');
     }
   }, [book]);
 
-  if (!isOpen || !book) return null;
+  if (!isOpen || !displayBook) return null;
 
   const handleSave = async () => {
     setLoading(true);
     setError('');
 
     try {
-      await bookService.updateBook(user?.id || null, book.id, {
+      await bookService.updateBook(user?.id || null, displayBook.id, {
         title: editedBook.title,
         author: editedBook.author,
         genre: editedBook.genre || undefined,
@@ -53,6 +55,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
         tags: editedBook.tags || [],
       });
 
+      setDisplayBook(editedBook as Book);
       setIsEditing(false);
       onUpdate();
     } catch (err: any) {
@@ -69,7 +72,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
     setError('');
 
     try {
-      await bookService.deleteBook(user?.id || null, book.id);
+      await bookService.deleteBook(user?.id || null, displayBook.id);
       onClose();
       onUpdate();
     } catch (err: any) {
@@ -105,17 +108,18 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
 
     try {
       const oldImageUrl = editedBook.cover_image_url;
-      const imageUrl = await uploadBookCover(user?.id || null, book.id, file);
+      const imageUrl = await uploadBookCover(user?.id || null, displayBook.id, file);
 
-      setEditedBook({
+      const updatedBookData = {
         ...editedBook,
         cover_image_url: imageUrl,
-      });
+      };
 
-      await bookService.updateBook(user?.id || null, book.id, {
-        ...editedBook,
-        cover_image_url: imageUrl,
-      });
+      setEditedBook(updatedBookData);
+
+      await bookService.updateBook(user?.id || null, displayBook.id, updatedBookData);
+
+      setDisplayBook(updatedBookData as Book);
 
       if (oldImageUrl && oldImageUrl.includes('supabase')) {
         await deleteBookCover(oldImageUrl, user?.id || null);
@@ -179,15 +183,16 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
     try {
       const oldImageUrl = editedBook.cover_image_url;
 
-      setEditedBook({
+      const updatedBookData = {
         ...editedBook,
         cover_image_url: undefined,
-      });
+      };
 
-      await bookService.updateBook(user?.id || null, book.id, {
-        ...editedBook,
-        cover_image_url: undefined,
-      });
+      setEditedBook(updatedBookData);
+
+      await bookService.updateBook(user?.id || null, displayBook.id, updatedBookData);
+
+      setDisplayBook(updatedBookData as Book);
 
       if (oldImageUrl && oldImageUrl.includes('supabase')) {
         await deleteBookCover(oldImageUrl, user?.id || null);
@@ -207,19 +212,20 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
 
     try {
       const oldImageUrl = editedBook.cover_image_url;
-      const enrichedData = await enrichBookData(editedBook.title || book.title, editedBook.author || book.author);
+      const enrichedData = await enrichBookData(editedBook.title || displayBook.title, editedBook.author || displayBook.author);
 
       const newCoverUrl = enrichedData.cover_image_url;
 
-      setEditedBook({
+      const updatedBookData = {
         ...editedBook,
         cover_image_url: newCoverUrl,
-      });
+      };
 
-      await bookService.updateBook(user?.id || null, book.id, {
-        ...editedBook,
-        cover_image_url: newCoverUrl,
-      });
+      setEditedBook(updatedBookData);
+
+      await bookService.updateBook(user?.id || null, displayBook.id, updatedBookData);
+
+      setDisplayBook(updatedBookData as Book);
 
       if (oldImageUrl && oldImageUrl.includes('supabase')) {
         await deleteBookCover(oldImageUrl, user?.id || null);
@@ -355,7 +361,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                   />
                 ) : (
-                  <h2 className="text-2xl font-bold dark:text-white">{book.title}</h2>
+                  <h2 className="text-2xl font-bold dark:text-white">{displayBook.title}</h2>
                 )}
               </div>
 
@@ -369,7 +375,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                   />
                 ) : (
-                  <p className="text-lg text-gray-700 dark:text-gray-300">{book.author}</p>
+                  <p className="text-lg text-gray-700 dark:text-gray-300">{displayBook.author}</p>
                 )}
               </div>
 
@@ -387,7 +393,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                       <option value="Non-fiction">Non-fiction</option>
                     </select>
                   ) : (
-                    <p className="text-gray-700 dark:text-gray-300">{book.genre || 'Not specified'}</p>
+                    <p className="text-gray-700 dark:text-gray-300">{displayBook.genre || 'Not specified'}</p>
                   )}
                 </div>
 
@@ -401,7 +407,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                     />
                   ) : (
-                    <p className="text-gray-700 dark:text-gray-300">{book.holiday_category || 'Not specified'}</p>
+                    <p className="text-gray-700 dark:text-gray-300">{displayBook.holiday_category || 'Not specified'}</p>
                   )}
                 </div>
               </div>
@@ -417,7 +423,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                     />
                   ) : (
-                    <p className="text-gray-700 dark:text-gray-300">{book.isbn || 'Not available'}</p>
+                    <p className="text-gray-700 dark:text-gray-300">{displayBook.isbn || 'Not available'}</p>
                   )}
                 </div>
 
@@ -431,7 +437,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                     />
                   ) : (
-                    <p className="text-gray-700 dark:text-gray-300">{book.publication_year || 'Not available'}</p>
+                    <p className="text-gray-700 dark:text-gray-300">{displayBook.publication_year || 'Not available'}</p>
                   )}
                 </div>
               </div>
@@ -445,7 +451,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white h-24"
                   />
                 ) : (
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">{book.description || 'No description available'}</p>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">{displayBook.description || 'No description available'}</p>
                 )}
               </div>
 
@@ -508,7 +514,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                   <>
                     <button
                       onClick={() => {
-                        setEditedBook(book);
+                        setEditedBook(displayBook);
                         setIsEditing(false);
                       }}
                       className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
