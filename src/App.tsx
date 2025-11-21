@@ -208,14 +208,6 @@ function AppContent() {
 
             <div className="flex items-center gap-3">
               <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                aria-label="Toggle dark mode"
-              >
-                {isDark ? <Sun size={20} className="text-gray-700 dark:text-gray-200" /> : <Moon size={20} className="text-gray-700" />}
-              </button>
-
-              <button
                 onClick={() => setCatalogModalOpen(true)}
                 className="flex items-center gap-2 bg-slate-600 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors"
               >
@@ -258,6 +250,14 @@ function AppContent() {
                   Sign Out
                 </button>
               )}
+
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                aria-label="Toggle dark mode"
+              >
+                {isDark ? <Sun size={20} className="text-gray-700 dark:text-gray-200" /> : <Moon size={20} className="text-gray-700" />}
+              </button>
             </div>
           </div>
         </div>
