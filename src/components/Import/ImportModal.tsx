@@ -179,31 +179,31 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
 
   const renderPreviewStage = () => (
     <>
-      <h2 className="text-2xl font-bold mb-6">Preview Import</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Preview Import</h2>
 
       <div className="mb-6 space-y-4">
-        <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
           <div className="flex items-center gap-2">
-            <CheckCircle className="text-green-600" size={20} />
-            <span className="font-medium text-green-900">Ready to Import</span>
+            <CheckCircle className="text-green-600 dark:text-green-400" size={20} />
+            <span className="font-medium text-green-900 dark:text-green-100">Ready to Import</span>
           </div>
-          <span className="text-2xl font-bold text-green-600">
+          <span className="text-2xl font-bold text-green-600 dark:text-green-400">
             {importResult?.validRecords}
           </span>
         </div>
 
         {importResult && importResult.warnings.length > 0 && (
-          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg max-h-40 overflow-y-auto">
+          <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg max-h-40 overflow-y-auto">
             <div className="flex items-start gap-2 mb-2">
-              <AlertTriangle className="text-yellow-600 flex-shrink-0 mt-0.5" size={20} />
-              <span className="font-medium text-yellow-900">Warnings ({importResult.warnings.length})</span>
+              <AlertTriangle className="text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" size={20} />
+              <span className="font-medium text-yellow-900 dark:text-yellow-100">Warnings ({importResult.warnings.length})</span>
             </div>
             <div className="space-y-1">
               {importResult.warnings.slice(0, 5).map((warning, index) => (
-                <p key={index} className="text-sm text-yellow-700">{warning}</p>
+                <p key={index} className="text-sm text-yellow-700 dark:text-yellow-300">{warning}</p>
               ))}
               {importResult.warnings.length > 5 && (
-                <p className="text-sm text-yellow-600 font-medium">
+                <p className="text-sm text-yellow-600 dark:text-yellow-400 font-medium">
                   ... and {importResult.warnings.length - 5} more
                 </p>
               )}
@@ -212,28 +212,28 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
         )}
       </div>
 
-      <div className="mb-6 max-h-64 overflow-y-auto border border-gray-200 rounded-lg">
+      <div className="mb-6 max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 sticky top-0">
+          <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0">
             <tr>
-              <th className="px-4 py-2 text-left font-medium text-gray-700">Title</th>
-              <th className="px-4 py-2 text-left font-medium text-gray-700">Author</th>
-              <th className="px-4 py-2 text-left font-medium text-gray-700">Genre</th>
+              <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-200">Title</th>
+              <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-200">Author</th>
+              <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-200">Genre</th>
             </tr>
           </thead>
           <tbody>
             {importResult?.books.slice(0, 10).map((book, index) => (
-              <tr key={index} className="border-t border-gray-200">
-                <td className="px-4 py-2 text-gray-900">{book.title}</td>
-                <td className="px-4 py-2 text-gray-700">{book.author}</td>
-                <td className="px-4 py-2 text-gray-600">{book.genre || '-'}</td>
+              <tr key={index} className="border-t border-gray-200 dark:border-gray-700">
+                <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{book.title}</td>
+                <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{book.author}</td>
+                <td className="px-4 py-2 text-gray-600 dark:text-gray-400">{book.genre || '-'}</td>
               </tr>
             ))}
           </tbody>
         </table>
         {importResult && importResult.books.length > 10 && (
-          <div className="p-3 bg-gray-50 border-t border-gray-200 text-center">
-            <p className="text-sm text-gray-600">
+          <div className="p-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-700 text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               ... and {importResult.books.length - 10} more books
             </p>
           </div>
