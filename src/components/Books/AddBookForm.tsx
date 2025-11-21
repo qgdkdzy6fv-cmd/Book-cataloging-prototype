@@ -52,8 +52,14 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
 
     setLoadingTitleSuggestions(true);
     try {
+      let query = `intitle:${encodeURIComponent(searchTitle.trim())}`;
+
+      if (author.trim()) {
+        query += `+inauthor:${encodeURIComponent(author.trim())}`;
+      }
+
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(searchTitle.trim())}&maxResults=5`
+        `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=5`
       );
 
       if (!response.ok) {
