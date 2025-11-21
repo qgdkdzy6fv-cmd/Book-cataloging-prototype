@@ -204,7 +204,7 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
       <div className="flex gap-3">
         <button
           onClick={handleClose}
-          className="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+          className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         >
           Cancel
         </button>
@@ -285,7 +285,7 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
       <div className="flex gap-3">
         <button
           onClick={() => setStage('upload')}
-          className="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+          className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         >
           Back
         </button>
@@ -302,16 +302,16 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
 
   const renderImportingStage = () => (
     <>
-      <h2 className="text-2xl font-bold mb-6">Importing Books</h2>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Importing Books</h2>
 
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-700">Progress</span>
-          <span className="text-sm font-medium text-gray-900">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Progress</span>
+          <span className="text-sm font-medium text-gray-900 dark:text-white">
             {importedCount} / {importResult?.validRecords}
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
           <div
             className="bg-blue-600 h-2 rounded-full transition-all duration-300"
             style={{
@@ -323,23 +323,23 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
 
       <div className="text-center py-8">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
-        <p className="text-gray-600">Importing your books...</p>
+        <p className="text-gray-600 dark:text-gray-400">Importing your books...</p>
       </div>
     </>
   );
 
   const renderCompleteStage = () => (
     <>
-      <h2 className="text-2xl font-bold mb-6">Import Complete</h2>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Import Complete</h2>
 
       <div className="text-center py-8 mb-6">
-        <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-          <CheckCircle className="text-green-600" size={32} />
+        <div className="mx-auto mb-4 w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+          <CheckCircle className="text-green-600 dark:text-green-400" size={32} />
         </div>
-        <p className="text-xl font-semibold text-gray-900 mb-2">
+        <p className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
           Successfully imported {importedCount} books!
         </p>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-400">
           Your books have been added to the catalog
         </p>
       </div>
@@ -354,12 +354,22 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
   );
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full p-6 relative max-h-[90vh] overflow-y-auto transition-colors">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && stage !== 'importing') {
+          handleClose();
+        }
+      }}
+    >
+      <div
+        className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full p-6 relative max-h-[90vh] overflow-y-auto transition-colors"
+        onClick={(e) => e.stopPropagation()}
+      >
         {stage !== 'importing' && (
           <button
             onClick={handleClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           >
             <X size={24} />
           </button>
