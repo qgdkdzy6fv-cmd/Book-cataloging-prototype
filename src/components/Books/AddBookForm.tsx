@@ -69,7 +69,15 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
             author: item.volumeInfo.authors?.[0] || 'Unknown Author',
           }))
           .filter((book: any) => book.title);
-        setTitleSuggestions(books);
+
+        const uniqueBooks = books.filter((book: any, index: number, self: any[]) =>
+          index === self.findIndex((b: any) =>
+            b.title.toLowerCase() === book.title.toLowerCase() &&
+            b.author.toLowerCase() === book.author.toLowerCase()
+          )
+        );
+
+        setTitleSuggestions(uniqueBooks);
       } else {
         setTitleSuggestions([]);
       }
