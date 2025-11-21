@@ -24,6 +24,7 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
   const authorInputRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const titleDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  const authorDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -40,6 +41,9 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
       document.removeEventListener('mousedown', handleClickOutside);
       if (titleDebounceRef.current) {
         clearTimeout(titleDebounceRef.current);
+      }
+      if (authorDebounceRef.current) {
+        clearTimeout(authorDebounceRef.current);
       }
     };
   }, []);
@@ -95,16 +99,22 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
     }
   };
 
-  const fetchAuthorSuggestions = async () => {
-    if (!title.trim()) {
+  const fetchAuthorSuggestions = async (searchAuthor: string) => {
+    if (!searchAuthor.trim() || searchAuthor.trim().length < 2) {
       setAuthorSuggestions([]);
       return;
     }
 
     setLoadingSuggestions(true);
     try {
+      let query = `inauthor:${encodeURIComponent(searchAuthor.trim())}`;
+
+      if (title.trim()) {
+        query += `+intitle:${encodeURIComponent(title.trim())}`;
+      }
+
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title.trim())}&maxResults=5`
+        `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=5`
       );
 
       if (!response.ok) {
@@ -157,12 +167,21 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
     setTitleSuggestions([]);
   };
 
-  const handleAuthorInputFocus = () => {
-    if (title.trim()) {
+  const handleAuthorChange = (value: string) => {
+    setAuthor(value);
+
+    if (authorDebounceRef.current) {
+      clearTimeout(authorDebounceRef.current);
+    }
+
+    if (value.trim().length >= 2) {
       setShowSuggestions(true);
-      if (authorSuggestions.length === 0) {
-        fetchAuthorSuggestions();
-      }
+      authorDebounceRef.current = setTimeout(() => {
+        fetchAuthorSuggestions(value);
+      }, 500);
+    } else {
+      setAuthorSuggestions([]);
+      setShowSuggestions(false);
     }
   };
 
@@ -262,22 +281,22 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
             id="author"
             type="text"
             value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            onFocus={handleAuthorInputFocus}
+            onChange={(e) => handleAuthorChange(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
             placeholder="Enter author name"
             required
           />
-          {showSuggestions && title.trim() && (
+          {showSuggestions && author.trim().length >= 2 && (
             <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-48 overflow-y-auto">
               {loadingSuggestions ? (
-                <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                  <Loader2 size={16} className="animate-spin" />
                   Loading suggestions...
                 </div>
               ) : authorSuggestions.length > 0 ? (
                 <>
                   <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-600">
-                    Suggested authors for "{title}"
+                    Author suggestions
                   </div>
                   {authorSuggestions.map((suggestion, index) => (
                     <button
@@ -292,7 +311,7 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
                 </>
               ) : (
                 <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
-                  No author suggestions found for this title
+                  No suggestions found
                 </div>
               )}
             </div>
