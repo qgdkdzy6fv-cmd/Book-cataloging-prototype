@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import { X, Save, Trash2, BookOpen, Tag as TagIcon } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { X, Save, Trash2, BookOpen, Tag as TagIcon, Upload, Image as ImageIcon } from 'lucide-react';
 import { bookService } from '../../services/bookService';
+import { uploadBookCover, deleteBookCover } from '../../services/imageUploadService';
 import { useAuth } from '../../contexts/AuthContext';
 import type { Book } from '../../types';
 
@@ -16,7 +17,9 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
   const [editedBook, setEditedBook] = useState<Partial<Book>>({});
   const [newTag, setNewTag] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -91,32 +94,141 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
     });
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    setError('');
+
+    try {
+      const oldImageUrl = editedBook.cover_image_url;
+      const imageUrl = await uploadBookCover(user?.id || null, book.id, file);
+
+      setEditedBook({
+        ...editedBook,
+        cover_image_url: imageUrl,
+      });
+
+      await bookService.updateBook(user?.id || null, book.id, {
+        ...editedBook,
+        cover_image_url: imageUrl,
+      });
+
+      if (oldImageUrl && oldImageUrl.includes('supabase')) {
+        await deleteBookCover(oldImageUrl, user?.id || null);
+      }
+
+      onUpdate();
+    } catch (err: any) {
+      setError(err.message || 'Failed to upload image');
+    } finally {
+      setUploadingImage(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleRemoveImage = async () => {
+    if (!confirm('Are you sure you want to remove this cover image?')) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const oldImageUrl = editedBook.cover_image_url;
+
+      setEditedBook({
+        ...editedBook,
+        cover_image_url: undefined,
+      });
+
+      await bookService.updateBook(user?.id || null, book.id, {
+        ...editedBook,
+        cover_image_url: undefined,
+      });
+
+      if (oldImageUrl && oldImageUrl.includes('supabase')) {
+        await deleteBookCover(oldImageUrl, user?.id || null);
+      }
+
+      onUpdate();
+    } catch (err: any) {
+      setError(err.message || 'Failed to remove image');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg max-w-4xl w-full my-8 relative">
+      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full my-8 relative transition-colors">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 z-10"
         >
           <X size={24} />
         </button>
 
         <div className="flex flex-col md:flex-row">
-          <div className="md:w-1/3 bg-gray-100 p-6 flex items-center justify-center">
-            {editedBook.cover_image_url ? (
-              <img
-                src={editedBook.cover_image_url}
-                alt={editedBook.title}
-                className="max-w-full h-auto rounded-lg shadow-lg"
-              />
-            ) : (
-              <div className="bg-gray-200 rounded-lg p-12">
-                <BookOpen size={64} className="text-gray-400" />
+          <div className="md:w-1/3 bg-gray-100 dark:bg-gray-700 p-6 flex flex-col items-center justify-center gap-4 transition-colors">
+            <div className="relative group">
+              {editedBook.cover_image_url ? (
+                <img
+                  src={editedBook.cover_image_url}
+                  alt={editedBook.title}
+                  className="max-w-full h-auto rounded-lg shadow-lg"
+                />
+              ) : (
+                <div className="bg-gray-200 dark:bg-gray-600 rounded-lg p-12">
+                  <BookOpen size={64} className="text-gray-400 dark:text-gray-500" />
+                </div>
+              )}
+            </div>
+
+            {isEditing && (
+              <div className="flex flex-col gap-2 w-full">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  disabled={uploadingImage}
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingImage}
+                  className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                >
+                  {uploadingImage ? (
+                    <>
+                      <Upload size={16} className="animate-pulse" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <ImageIcon size={16} />
+                      Upload Image
+                    </>
+                  )}
+                </button>
+                {editedBook.cover_image_url && (
+                  <button
+                    onClick={handleRemoveImage}
+                    disabled={loading || uploadingImage}
+                    className="w-full flex items-center justify-center gap-2 border border-red-600 text-red-600 px-4 py-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                  >
+                    <X size={16} />
+                    Remove Image
+                  </button>
+                )}
               </div>
             )}
           </div>
 
-          <div className="md:w-2/3 p-6">
+          <div className="md:w-2/3 p-6 dark:text-white transition-colors">
             {error && (
               <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-4">
                 {error}
@@ -125,59 +237,59 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
                 {isEditing ? (
                   <input
                     type="text"
                     value={editedBook.title || ''}
                     onChange={(e) => setEditedBook({ ...editedBook, title: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                   />
                 ) : (
-                  <h2 className="text-2xl font-bold">{book.title}</h2>
+                  <h2 className="text-2xl font-bold dark:text-white">{book.title}</h2>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Author</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Author</label>
                 {isEditing ? (
                   <input
                     type="text"
                     value={editedBook.author || ''}
                     onChange={(e) => setEditedBook({ ...editedBook, author: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                   />
                 ) : (
-                  <p className="text-lg text-gray-700">{book.author}</p>
+                  <p className="text-lg text-gray-700 dark:text-gray-300">{book.author}</p>
                 )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Genre</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Genre</label>
                   {isEditing ? (
                     <select
                       value={editedBook.genre || ''}
                       onChange={(e) => setEditedBook({ ...editedBook, genre: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                     >
                       <option value="">None</option>
                       <option value="Fiction">Fiction</option>
                       <option value="Non-fiction">Non-fiction</option>
                     </select>
                   ) : (
-                    <p className="text-gray-700">{book.genre || 'Not specified'}</p>
+                    <p className="text-gray-700 dark:text-gray-300">{book.genre || 'Not specified'}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Holiday</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Holiday</label>
                   {isEditing ? (
                     <input
                       type="text"
                       value={editedBook.holiday_category || ''}
                       onChange={(e) => setEditedBook({ ...editedBook, holiday_category: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                     />
                   ) : (
                     <p className="text-gray-700">{book.holiday_category || 'Not specified'}</p>
@@ -187,49 +299,49 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">ISBN</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ISBN</label>
                   {isEditing ? (
                     <input
                       type="text"
                       value={editedBook.isbn || ''}
                       onChange={(e) => setEditedBook({ ...editedBook, isbn: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                     />
                   ) : (
-                    <p className="text-gray-700">{book.isbn || 'Not available'}</p>
+                    <p className="text-gray-700 dark:text-gray-300">{book.isbn || 'Not available'}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Publication Year</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Publication Year</label>
                   {isEditing ? (
                     <input
                       type="number"
                       value={editedBook.publication_year || ''}
                       onChange={(e) => setEditedBook({ ...editedBook, publication_year: parseInt(e.target.value) || null })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                     />
                   ) : (
-                    <p className="text-gray-700">{book.publication_year || 'Not available'}</p>
+                    <p className="text-gray-700 dark:text-gray-300">{book.publication_year || 'Not available'}</p>
                   )}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                 {isEditing ? (
                   <textarea
                     value={editedBook.description || ''}
                     onChange={(e) => setEditedBook({ ...editedBook, description: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 h-24"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white h-24"
                   />
                 ) : (
-                  <p className="text-gray-700 text-sm">{book.description || 'No description available'}</p>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">{book.description || 'No description available'}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
                   <TagIcon size={16} />
                   Tags
                 </label>
@@ -237,7 +349,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                   {(editedBook.tags || []).map((tag, index) => (
                     <span
                       key={index}
-                      className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center gap-1"
+                      className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm flex items-center gap-1"
                     >
                       {tag}
                       {isEditing && (
@@ -259,7 +371,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                       onChange={(e) => setNewTag(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                       placeholder="Add a tag"
-                      className="flex-1 px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                      className="flex-1 px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white text-sm"
                     />
                     <button
                       onClick={addTag}
@@ -272,7 +384,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
               </div>
             </div>
 
-            <div className="flex justify-between mt-6 pt-4 border-t">
+            <div className="flex justify-between mt-6 pt-4 border-t dark:border-gray-700">
               <button
                 onClick={handleDelete}
                 disabled={loading}
@@ -290,7 +402,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                         setEditedBook(book);
                         setIsEditing(false);
                       }}
-                      className="border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition-colors"
+                      className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                       Cancel
                     </button>
