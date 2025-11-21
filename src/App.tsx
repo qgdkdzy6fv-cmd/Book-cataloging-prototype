@@ -195,6 +195,13 @@ function AppContent() {
               </div>
             </div>
 
+            <div className="flex flex-col items-center gap-1">
+              <div className="flex items-center gap-1">
+                <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">BETA</span>
+              </div>
+              <p className="text-xs text-gray-500">Export your work to avoid losing progress</p>
+            </div>
+
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setCatalogModalOpen(true)}
