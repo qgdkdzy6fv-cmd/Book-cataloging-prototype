@@ -22,7 +22,7 @@ export function BookCard({ book, onClick, onToggleFavorite, onToggleRead }: Book
   return (
     <div
       onClick={onClick}
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all cursor-pointer"
+      className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all cursor-pointer group"
     >
       <div className="aspect-[2/3] bg-gray-100 dark:bg-gray-700 relative">
         {book.cover_image_url ? (
@@ -42,7 +42,9 @@ export function BookCard({ book, onClick, onToggleFavorite, onToggleRead }: Book
 
         <button
           onClick={handleFavoriteClick}
-          className="absolute top-2 right-2 p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:scale-110 transition-transform"
+          className={`absolute top-2 right-2 p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:scale-110 transition-all ${
+            book.is_favorite ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+          }`}
           aria-label={book.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
         >
           <Star
@@ -53,7 +55,9 @@ export function BookCard({ book, onClick, onToggleFavorite, onToggleRead }: Book
 
         <button
           onClick={handleReadClick}
-          className="absolute top-2 left-2 p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:scale-110 transition-transform"
+          className={`absolute top-2 left-2 p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:scale-110 transition-all ${
+            book.is_read ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+          }`}
           aria-label={book.is_read ? 'Mark as unread' : 'Mark as read'}
         >
           <Check
