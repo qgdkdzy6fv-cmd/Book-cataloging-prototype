@@ -58,7 +58,8 @@ export function BookCard({ book, onClick, onToggleFavorite, onToggleRead }: Book
         >
           <CheckCircle
             size={20}
-            className={book.is_read ? 'fill-green-500 text-green-500' : 'text-gray-400 dark:text-gray-500'}
+            className={book.is_read ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}
+            fill={book.is_read ? 'currentColor' : 'none'}
           />
         </button>
       </div>
