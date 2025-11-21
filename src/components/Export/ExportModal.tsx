@@ -1,5 +1,5 @@
 import { X, FileSpreadsheet, FileText, Download } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { exportService } from '../../services/exportService';
 import type { Book, ExportFormat } from '../../types';
 
@@ -7,18 +7,26 @@ interface ExportModalProps {
   isOpen: boolean;
   onClose: () => void;
   books: Book[];
+  catalogName?: string;
 }
 
-export function ExportModal({ isOpen, onClose, books }: ExportModalProps) {
+export function ExportModal({ isOpen, onClose, books, catalogName = 'book-catalog' }: ExportModalProps) {
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('csv');
   const [loading, setLoading] = useState(false);
+  const [filename, setFilename] = useState(catalogName);
+
+  useEffect(() => {
+    if (isOpen) {
+      setFilename(catalogName);
+    }
+  }, [isOpen, catalogName]);
 
   if (!isOpen) return null;
 
   const handleExport = async () => {
     setLoading(true);
     try {
-      exportService.exportBooks(books, selectedFormat);
+      exportService.exportBooks(books, selectedFormat, filename);
       setTimeout(() => {
         onClose();
       }, 500);
@@ -65,6 +73,22 @@ export function ExportModal({ isOpen, onClose, books }: ExportModalProps) {
         <p className="text-gray-600 dark:text-gray-400 mb-6">
           Export {books.length} book{books.length !== 1 ? 's' : ''} to your preferred format
         </p>
+
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Filename
+          </label>
+          <input
+            type="text"
+            value={filename}
+            onChange={(e) => setFilename(e.target.value)}
+            placeholder="Enter filename"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            File extension will be added automatically
+          </p>
+        </div>
 
         <div className="space-y-3 mb-6">
           {formats.map((format) => (

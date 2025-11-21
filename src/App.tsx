@@ -341,6 +341,7 @@ function AppContent() {
         isOpen={exportModalOpen}
         onClose={() => setExportModalOpen(false)}
         books={filteredBooks}
+        catalogName={catalogs.find(c => c.id === activeCatalogId)?.name || 'book-catalog'}
       />
       <BookDetailModal
         book={selectedBook}

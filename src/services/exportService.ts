@@ -120,18 +120,20 @@ function downloadFile(content: string, filename: string, mimeType: string) {
 }
 
 export const exportService = {
-  exportBooks(books: Book[], format: ExportFormat) {
+  exportBooks(books: Book[], format: ExportFormat, filename: string = 'book-catalog') {
+    const sanitizedFilename = filename.replace(/[^a-z0-9_-]/gi, '_') || 'book-catalog';
     const timestamp = new Date().toISOString().split('T')[0];
+    const filenameWithDate = `${sanitizedFilename}-${timestamp}`;
 
     switch (format) {
       case 'csv':
         const csvContent = generateCSV(books);
-        downloadFile(csvContent, `book-catalog-${timestamp}.csv`, 'text/csv;charset=utf-8;');
+        downloadFile(csvContent, `${filenameWithDate}.csv`, 'text/csv;charset=utf-8;');
         break;
 
       case 'xlsx':
         const htmlContent = generateHTML(books);
-        downloadFile(htmlContent, `book-catalog-${timestamp}.html`, 'text/html;charset=utf-8;');
+        downloadFile(htmlContent, `${filenameWithDate}.html`, 'text/html;charset=utf-8;');
         alert('Note: Excel format exported as HTML. Open the file and save as .xlsx from Excel for full compatibility.');
         break;
 
