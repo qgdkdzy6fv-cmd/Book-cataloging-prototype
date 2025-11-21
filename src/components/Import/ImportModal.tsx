@@ -19,6 +19,7 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [importing, setImporting] = useState(false);
   const [importedCount, setImportedCount] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   if (!isOpen) return null;
 
@@ -66,6 +67,38 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
   const handleAnalyze = async () => {
     if (!file) return;
     await handleAnalyzeFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const droppedFile = e.dataTransfer.files[0];
+    if (droppedFile) {
+      const fileExtension = droppedFile.name.split('.').pop()?.toLowerCase();
+      if (fileExtension === 'csv' || fileExtension === 'html' || fileExtension === 'htm') {
+        console.log('File dropped:', droppedFile.name, droppedFile.size);
+        setFile(droppedFile);
+        setStage('upload');
+        setImportResult(null);
+        await handleAnalyzeFile(droppedFile);
+      } else {
+        alert('Please drop a CSV or HTML file.');
+      }
+    }
   };
 
   const handleImport = async () => {
@@ -119,8 +152,17 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
         Upload a CSV or HTML file that was previously exported from this application
       </p>
 
-      <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center mb-6">
-        <Upload className="mx-auto mb-4 text-gray-400 dark:text-gray-500" size={48} />
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={`border-2 border-dashed rounded-lg p-8 text-center mb-6 transition-colors ${
+          isDragging
+            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+            : 'border-gray-300 dark:border-gray-600'
+        }`}
+      >
+        <Upload className={`mx-auto mb-4 ${isDragging ? 'text-blue-500' : 'text-gray-400 dark:text-gray-500'}`} size={48} />
 
         <label className="cursor-pointer">
           <input
@@ -129,18 +171,18 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
             onChange={handleFileSelect}
             className="hidden"
           />
-          <span className="text-blue-600 hover:text-blue-700 font-medium">
+          <span className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
             Choose a file
           </span>
-          <span className="text-gray-600"> or drag and drop</span>
+          <span className="text-gray-600 dark:text-gray-400"> or drag and drop</span>
         </label>
 
-        <p className="text-sm text-gray-500 mt-2">CSV or HTML files only</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">CSV or HTML files only</p>
 
         {file && (
-          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <p className="text-sm font-medium text-gray-900">{file.name}</p>
-            <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(2)} KB</p>
+          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{file.name}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{(file.size / 1024).toFixed(2)} KB</p>
           </div>
         )}
       </div>
