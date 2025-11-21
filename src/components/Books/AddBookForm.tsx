@@ -49,17 +49,22 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
   }, []);
 
   const fetchTitleSuggestions = async (searchTitle: string) => {
-    if (!searchTitle.trim() || searchTitle.trim().length < 2) {
+    if (!author.trim() && (!searchTitle.trim() || searchTitle.trim().length < 2)) {
       setTitleSuggestions([]);
       return;
     }
 
     setLoadingTitleSuggestions(true);
     try {
-      let query = `intitle:${encodeURIComponent(searchTitle.trim())}`;
+      let query = '';
 
-      if (author.trim()) {
-        query += `+inauthor:${encodeURIComponent(author.trim())}`;
+      if (author.trim() && !searchTitle.trim()) {
+        query = `inauthor:${encodeURIComponent(author.trim())}`;
+      } else if (searchTitle.trim()) {
+        query = `intitle:${encodeURIComponent(searchTitle.trim())}`;
+        if (author.trim()) {
+          query += `+inauthor:${encodeURIComponent(author.trim())}`;
+        }
       }
 
       const response = await fetch(
@@ -149,7 +154,7 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
       clearTimeout(titleDebounceRef.current);
     }
 
-    if (value.trim().length >= 2) {
+    if (value.trim().length >= 2 || (value.trim().length === 0 && author.trim())) {
       setShowTitleSuggestions(true);
       titleDebounceRef.current = setTimeout(() => {
         fetchTitleSuggestions(value);
@@ -157,6 +162,13 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
     } else {
       setTitleSuggestions([]);
       setShowTitleSuggestions(false);
+    }
+  };
+
+  const handleTitleFocus = () => {
+    if (author.trim() && !title.trim()) {
+      setShowTitleSuggestions(true);
+      fetchTitleSuggestions('');
     }
   };
 
@@ -232,11 +244,12 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
             type="text"
             value={title}
             onChange={(e) => handleTitleChange(e.target.value)}
+            onFocus={handleTitleFocus}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
             placeholder="Enter book title"
             required
           />
-          {showTitleSuggestions && title.trim().length >= 2 && (
+          {showTitleSuggestions && (title.trim().length >= 2 || (author.trim() && !title.trim())) && (
             <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
               {loadingTitleSuggestions ? (
                 <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
