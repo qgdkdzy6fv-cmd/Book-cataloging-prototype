@@ -38,6 +38,7 @@ export const localStorageService = {
       tags: bookData.tags || [],
       is_manually_edited: false,
       is_favorite: false,
+      is_read: false,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -56,6 +57,22 @@ export const localStorageService = {
     books[index] = {
       ...books[index],
       is_favorite: !books[index].is_favorite,
+      updated_at: new Date().toISOString(),
+    };
+
+    this.saveBooks(books);
+    return books[index];
+  },
+
+  toggleRead(id: string): Book | null {
+    const books = this.getBooks();
+    const index = books.findIndex(b => b.id === id);
+
+    if (index === -1) return null;
+
+    books[index] = {
+      ...books[index],
+      is_read: !books[index].is_read,
       updated_at: new Date().toISOString(),
     };
 

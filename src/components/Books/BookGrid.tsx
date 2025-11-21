@@ -5,9 +5,10 @@ interface BookGridProps {
   books: Book[];
   onBookClick: (book: Book) => void;
   onToggleFavorite: (bookId: string) => void;
+  onToggleRead: (bookId: string) => void;
 }
 
-export function BookGrid({ books, onBookClick, onToggleFavorite }: BookGridProps) {
+export function BookGrid({ books, onBookClick, onToggleFavorite, onToggleRead }: BookGridProps) {
   if (books.length === 0) {
     return (
       <div className="text-center py-12">
@@ -25,6 +26,7 @@ export function BookGrid({ books, onBookClick, onToggleFavorite }: BookGridProps
           book={book}
           onClick={() => onBookClick(book)}
           onToggleFavorite={onToggleFavorite}
+          onToggleRead={onToggleRead}
         />
       ))}
     </div>

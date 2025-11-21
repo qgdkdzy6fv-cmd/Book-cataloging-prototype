@@ -1,16 +1,22 @@
-import { BookOpen, Tag, Calendar, Star } from 'lucide-react';
+import { BookOpen, Tag, Calendar, Star, CheckCircle } from 'lucide-react';
 import type { Book } from '../../types';
 
 interface BookCardProps {
   book: Book;
   onClick: () => void;
   onToggleFavorite: (bookId: string) => void;
+  onToggleRead: (bookId: string) => void;
 }
 
-export function BookCard({ book, onClick, onToggleFavorite }: BookCardProps) {
+export function BookCard({ book, onClick, onToggleFavorite, onToggleRead }: BookCardProps) {
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onToggleFavorite(book.id);
+  };
+
+  const handleReadClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleRead(book.id);
   };
 
   return (
@@ -42,6 +48,17 @@ export function BookCard({ book, onClick, onToggleFavorite }: BookCardProps) {
           <Star
             size={20}
             className={book.is_favorite ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400 dark:text-gray-500'}
+          />
+        </button>
+
+        <button
+          onClick={handleReadClick}
+          className="absolute top-2 left-2 p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:scale-110 transition-transform"
+          aria-label={book.is_read ? 'Mark as unread' : 'Mark as read'}
+        >
+          <CheckCircle
+            size={20}
+            className={book.is_read ? 'fill-green-500 text-green-500' : 'text-gray-400 dark:text-gray-500'}
           />
         </button>
       </div>

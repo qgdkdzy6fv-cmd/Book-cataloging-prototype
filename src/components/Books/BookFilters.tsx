@@ -1,4 +1,4 @@
-import { Filter, X, Star } from 'lucide-react';
+import { Filter, X, Star, CheckCircle, Circle } from 'lucide-react';
 import { useState } from 'react';
 import type { FilterOptions } from '../../types';
 
@@ -19,7 +19,7 @@ export function BookFilters({
 }: BookFiltersProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const hasActiveFilters = filters.favorites || filters.genre || filters.holiday_category || (filters.tags && filters.tags.length > 0);
+  const hasActiveFilters = filters.favorites || filters.read || filters.unread || filters.genre || filters.holiday_category || (filters.tags && filters.tags.length > 0);
 
   const clearFilters = () => {
     onFiltersChange({});
@@ -68,24 +68,60 @@ export function BookFilters({
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Favorites
+              Status
             </label>
-            <button
-              onClick={() =>
-                onFiltersChange({
-                  ...filters,
-                  favorites: !filters.favorites,
-                })
-              }
-              className={`px-3 py-1 rounded-full text-sm transition-colors flex items-center gap-1 ${
-                filters.favorites
-                  ? 'bg-yellow-500 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              <Star size={16} className={filters.favorites ? 'fill-white' : ''} />
-              Show Favorites Only
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() =>
+                  onFiltersChange({
+                    ...filters,
+                    favorites: !filters.favorites,
+                  })
+                }
+                className={`px-3 py-1 rounded-full text-sm transition-colors flex items-center gap-1 ${
+                  filters.favorites
+                    ? 'bg-yellow-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                <Star size={16} className={filters.favorites ? 'fill-white' : ''} />
+                Favorites
+              </button>
+              <button
+                onClick={() =>
+                  onFiltersChange({
+                    ...filters,
+                    read: !filters.read,
+                    unread: false,
+                  })
+                }
+                className={`px-3 py-1 rounded-full text-sm transition-colors flex items-center gap-1 ${
+                  filters.read
+                    ? 'bg-green-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                <CheckCircle size={16} className={filters.read ? 'fill-white' : ''} />
+                Read
+              </button>
+              <button
+                onClick={() =>
+                  onFiltersChange({
+                    ...filters,
+                    unread: !filters.unread,
+                    read: false,
+                  })
+                }
+                className={`px-3 py-1 rounded-full text-sm transition-colors flex items-center gap-1 ${
+                  filters.unread
+                    ? 'bg-gray-600 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                <Circle size={16} />
+                Unread
+              </button>
+            </div>
           </div>
 
           <div>

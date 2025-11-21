@@ -154,6 +154,15 @@ function AppContent() {
     }
   };
 
+  const handleToggleRead = async (bookId: string) => {
+    try {
+      await bookService.toggleRead(user?.id || null, bookId);
+      await loadBooks();
+    } catch (error) {
+      console.error('Failed to toggle read status:', error);
+    }
+  };
+
   const availableGenres = Array.from(new Set(books.filter(b => b.genre).map(b => b.genre!)));
   const availableHolidays = Array.from(new Set(books.filter(b => b.holiday_category).map(b => b.holiday_category!)));
   const availableTags = Array.from(new Set(books.flatMap(b => b.tags)));
@@ -315,7 +324,7 @@ function AppContent() {
             <p className="text-gray-500 dark:text-gray-400">Loading books...</p>
           </div>
         ) : (
-          <BookGrid books={filteredBooks} onBookClick={handleBookClick} onToggleFavorite={handleToggleFavorite} />
+          <BookGrid books={filteredBooks} onBookClick={handleBookClick} onToggleFavorite={handleToggleFavorite} onToggleRead={handleToggleRead} />
         )}
       </main>
 

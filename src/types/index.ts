@@ -22,6 +22,7 @@ export interface Book {
   tags: string[];
   is_manually_edited: boolean;
   is_favorite: boolean;
+  is_read: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -55,6 +56,8 @@ export interface FilterOptions {
   tags?: string[];
   search?: string;
   favorites?: boolean;
+  read?: boolean;
+  unread?: boolean;
 }
 
 export interface UserPreferences {
