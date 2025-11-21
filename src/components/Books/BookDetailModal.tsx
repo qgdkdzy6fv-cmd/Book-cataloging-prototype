@@ -22,6 +22,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
   const [uploadingImage, setUploadingImage] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [resettingImage, setResettingImage] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropZoneRef = useRef<HTMLDivElement>(null);
@@ -65,18 +66,18 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this book?')) return;
-
+  const confirmDelete = async () => {
     setLoading(true);
     setError('');
 
     try {
       await bookService.deleteBook(user?.id || null, displayBook.id);
+      setShowDeleteConfirm(false);
       onClose();
       onUpdate();
     } catch (err: any) {
       setError(err.message || 'Failed to delete book');
+      setShowDeleteConfirm(false);
     } finally {
       setLoading(false);
     }
@@ -501,7 +502,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
 
             <div className="flex justify-between mt-6 pt-4 border-t dark:border-gray-700">
               <button
-                onClick={handleDelete}
+                onClick={() => setShowDeleteConfirm(true)}
                 disabled={loading}
                 className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
               >
@@ -542,6 +543,36 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
             </div>
           </div>
         </div>
+
+        {showDeleteConfirm && (
+          <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 rounded-lg">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-4 shadow-xl">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                Remove Book from Catalog?
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-6">
+                Are you sure you want to remove "{displayBook.title}" from your catalog? This action cannot be undone.
+              </p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  disabled={loading}
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  disabled={loading}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  <Trash2 size={18} />
+                  {loading ? 'Removing...' : 'Remove Book'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
