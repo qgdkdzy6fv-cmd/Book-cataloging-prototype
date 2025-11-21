@@ -14,22 +14,72 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
   const [author, setAuthor] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [titleSuggestions, setTitleSuggestions] = useState<Array<{ title: string; author: string }>>([]);
+  const [showTitleSuggestions, setShowTitleSuggestions] = useState(false);
+  const [loadingTitleSuggestions, setLoadingTitleSuggestions] = useState(false);
   const [authorSuggestions, setAuthorSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const titleInputRef = useRef<HTMLDivElement>(null);
   const authorInputRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+  const titleDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (authorInputRef.current && !authorInputRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
       }
+      if (titleInputRef.current && !titleInputRef.current.contains(event.target as Node)) {
+        setShowTitleSuggestions(false);
+      }
     }
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      if (titleDebounceRef.current) {
+        clearTimeout(titleDebounceRef.current);
+      }
+    };
   }, []);
+
+  const fetchTitleSuggestions = async (searchTitle: string) => {
+    if (!searchTitle.trim() || searchTitle.trim().length < 2) {
+      setTitleSuggestions([]);
+      return;
+    }
+
+    setLoadingTitleSuggestions(true);
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(searchTitle.trim())}&maxResults=5`
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch suggestions');
+      }
+
+      const data = await response.json();
+
+      if (data.items && data.items.length > 0) {
+        const books = data.items
+          .map((item: any) => ({
+            title: item.volumeInfo.title || '',
+            author: item.volumeInfo.authors?.[0] || 'Unknown Author',
+          }))
+          .filter((book: any) => book.title);
+        setTitleSuggestions(books);
+      } else {
+        setTitleSuggestions([]);
+      }
+    } catch (error) {
+      console.error('Error fetching title suggestions:', error);
+      setTitleSuggestions([]);
+    } finally {
+      setLoadingTitleSuggestions(false);
+    }
+  };
 
   const fetchAuthorSuggestions = async () => {
     if (!title.trim()) {
@@ -68,6 +118,31 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
     }
   };
 
+  const handleTitleChange = (value: string) => {
+    setTitle(value);
+
+    if (titleDebounceRef.current) {
+      clearTimeout(titleDebounceRef.current);
+    }
+
+    if (value.trim().length >= 2) {
+      setShowTitleSuggestions(true);
+      titleDebounceRef.current = setTimeout(() => {
+        fetchTitleSuggestions(value);
+      }, 500);
+    } else {
+      setTitleSuggestions([]);
+      setShowTitleSuggestions(false);
+    }
+  };
+
+  const handleSelectTitle = (selectedBook: { title: string; author: string }) => {
+    setTitle(selectedBook.title);
+    setAuthor(selectedBook.author);
+    setShowTitleSuggestions(false);
+    setTitleSuggestions([]);
+  };
+
   const handleAuthorInputFocus = () => {
     if (title.trim()) {
       setShowSuggestions(true);
@@ -98,6 +173,8 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
       await bookService.addBook(user?.id || null, catalogId, bookData, true);
       setTitle('');
       setAuthor('');
+      setTitleSuggestions([]);
+      setShowTitleSuggestions(false);
       setAuthorSuggestions([]);
       setShowSuggestions(false);
       onBookAdded();
@@ -113,7 +190,7 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
       <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Add New Book</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
+        <div ref={titleInputRef} className="relative">
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Title <span className="text-red-500">*</span>
           </label>
@@ -121,11 +198,46 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
             id="title"
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => handleTitleChange(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
             placeholder="Enter book title"
             required
           />
+          {showTitleSuggestions && title.trim().length >= 2 && (
+            <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
+              {loadingTitleSuggestions ? (
+                <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                  <Loader2 size={16} className="animate-spin" />
+                  Loading suggestions...
+                </div>
+              ) : titleSuggestions.length > 0 ? (
+                <>
+                  <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-600">
+                    Book suggestions
+                  </div>
+                  {titleSuggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => handleSelectTitle(suggestion)}
+                      className="w-full text-left px-3 py-2 hover:bg-blue-50 dark:hover:bg-gray-600 transition-colors border-b dark:border-gray-600 last:border-b-0"
+                    >
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {suggestion.title}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                        by {suggestion.author}
+                      </div>
+                    </button>
+                  ))}
+                </>
+              ) : (
+                <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                  No suggestions found
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div ref={authorInputRef} className="relative">
