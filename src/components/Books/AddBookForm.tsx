@@ -67,8 +67,9 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
         }
       }
 
+      const startIndex = Math.floor(Math.random() * 20);
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=5`
+        `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=40&startIndex=${startIndex}`
       );
 
       if (!response.ok) {
@@ -92,7 +93,8 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
           )
         );
 
-        setTitleSuggestions(uniqueBooks);
+        const shuffled = uniqueBooks.sort(() => Math.random() - 0.5);
+        setTitleSuggestions(shuffled.slice(0, 5));
       } else {
         setTitleSuggestions([]);
       }
