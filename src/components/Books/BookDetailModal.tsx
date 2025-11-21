@@ -392,7 +392,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Holiday</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Holiday or Season</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -401,7 +401,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                     />
                   ) : (
-                    <p className="text-gray-700">{book.holiday_category || 'Not specified'}</p>
+                    <p className="text-gray-700 dark:text-gray-300">{book.holiday_category || 'Not specified'}</p>
                   )}
                 </div>
               </div>
