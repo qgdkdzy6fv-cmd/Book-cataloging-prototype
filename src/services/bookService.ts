@@ -210,4 +210,97 @@ export const bookService = {
     const randomIndex = Math.floor(Math.random() * books.length);
     return books[randomIndex];
   },
+
+  async getRandomBookSuggestion(existingBooks: Book[]): Promise<BookAPIResponse | null> {
+    try {
+      const genres = ['fiction', 'mystery', 'fantasy', 'science fiction', 'romance', 'thriller', 'historical fiction', 'adventure'];
+      const randomGenre = genres[Math.floor(Math.random() * genres.length)];
+
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=subject:${encodeURIComponent(randomGenre)}&orderBy=relevance&maxResults=40`
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch book suggestions');
+      }
+
+      const data = await response.json();
+
+      if (!data.items || data.items.length === 0) {
+        return null;
+      }
+
+      const existingTitles = new Set(
+        existingBooks.map(book => book.title.toLowerCase().trim())
+      );
+
+      const availableBooks = data.items.filter((item: any) => {
+        const bookTitle = item.volumeInfo?.title?.toLowerCase().trim();
+        return bookTitle && !existingTitles.has(bookTitle);
+      });
+
+      if (availableBooks.length === 0) {
+        return null;
+      }
+
+      const randomBook = availableBooks[Math.floor(Math.random() * availableBooks.length)];
+      const bookInfo = randomBook.volumeInfo;
+      const categories = bookInfo.categories || [];
+      const description = bookInfo.description || '';
+
+      return {
+        title: bookInfo.title,
+        author: bookInfo.authors?.join(', ') || 'Unknown Author',
+        genre: this.classifyGenre(categories),
+        cover_image_url: bookInfo.imageLinks?.thumbnail?.replace('http:', 'https:') ||
+                         bookInfo.imageLinks?.smallThumbnail?.replace('http:', 'https:'),
+        isbn: bookInfo.industryIdentifiers?.find((id: any) => id.type === 'ISBN_13')?.identifier ||
+              bookInfo.industryIdentifiers?.find((id: any) => id.type === 'ISBN_10')?.identifier,
+        publication_year: bookInfo.publishedDate ? parseInt(bookInfo.publishedDate.split('-')[0]) : undefined,
+        description: description,
+        holiday_category: this.detectHolidayCategory(bookInfo.title, description),
+      };
+    } catch (error) {
+      console.error('Error fetching random book suggestion:', error);
+      return null;
+    }
+  },
+
+  classifyGenre(categories: string[]): string {
+    const fictionKeywords = ['fiction', 'novel', 'fantasy', 'science fiction', 'mystery', 'thriller', 'romance'];
+    const nonFictionKeywords = ['biography', 'history', 'science', 'self-help', 'business', 'memoir', 'reference'];
+
+    const categoriesLower = categories.map(c => c.toLowerCase()).join(' ');
+
+    const hasFiction = fictionKeywords.some(keyword => categoriesLower.includes(keyword));
+    const hasNonFiction = nonFictionKeywords.some(keyword => categoriesLower.includes(keyword));
+
+    if (hasFiction && !hasNonFiction) return 'Fiction';
+    if (hasNonFiction && !hasFiction) return 'Non-fiction';
+    if (hasFiction) return 'Fiction';
+
+    return 'Fiction';
+  },
+
+  detectHolidayCategory(title: string, description: string): string | undefined {
+    const HOLIDAY_KEYWORDS: Record<string, string[]> = {
+      Christmas: ['christmas', 'santa', 'xmas', 'holiday', 'winter wonderland', 'reindeer', 'snowman'],
+      Halloween: ['halloween', 'spooky', 'ghost', 'witch', 'pumpkin', 'haunted'],
+      Easter: ['easter', 'bunny', 'egg'],
+      Thanksgiving: ['thanksgiving', 'turkey', 'pilgrim'],
+      Summer: ['summer', 'beach', 'vacation', 'sun'],
+      Valentine: ['valentine', 'love', 'romance', 'heart'],
+      'New Year': ['new year', 'resolution'],
+    };
+
+    const searchText = `${title} ${description}`.toLowerCase();
+
+    for (const [holiday, keywords] of Object.entries(HOLIDAY_KEYWORDS)) {
+      if (keywords.some(keyword => searchText.includes(keyword))) {
+        return holiday;
+      }
+    }
+
+    return undefined;
+  },
 };

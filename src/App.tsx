@@ -132,11 +132,30 @@ function AppContent() {
     }
   };
 
-  const handlePickRandom = () => {
-    const randomBook = bookService.getRandomBook(filteredBooks);
-    if (randomBook) {
-      setSelectedBook(randomBook);
-      setBookDetailOpen(true);
+  const handlePickRandom = async () => {
+    setLoading(true);
+    try {
+      const suggestion = await bookService.getRandomBookSuggestion(books);
+      if (suggestion) {
+        setShowAddBookForm(true);
+        const form = document.querySelector('input[placeholder="Book Title"]') as HTMLInputElement;
+        if (form) {
+          setTimeout(() => {
+            const titleInput = document.querySelector('input[placeholder="Book Title"]') as HTMLInputElement;
+            const authorInput = document.querySelector('input[placeholder="Author"]') as HTMLInputElement;
+            if (titleInput && authorInput) {
+              titleInput.value = suggestion.title;
+              authorInput.value = suggestion.author;
+              titleInput.dispatchEvent(new Event('input', { bubbles: true }));
+              authorInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+          }, 100);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to get random book suggestion:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
