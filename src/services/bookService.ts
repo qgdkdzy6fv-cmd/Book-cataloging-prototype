@@ -213,7 +213,7 @@ export const bookService = {
 
   async getRandomBookSuggestion(existingBooks: Book[]): Promise<BookAPIResponse | null> {
     try {
-      const genres = ['fiction', 'mystery', 'fantasy', 'science fiction', 'romance', 'thriller', 'historical fiction', 'adventure'];
+      const genres = ['fiction', 'mystery', 'fantasy', 'science fiction', 'romance', 'thriller', 'historical fiction', 'adventure', 'biography', 'self-help', 'history'];
       const randomGenre = genres[Math.floor(Math.random() * genres.length)];
 
       const response = await fetch(
@@ -230,13 +230,38 @@ export const bookService = {
         return null;
       }
 
-      const existingTitles = new Set(
-        existingBooks.map(book => book.title.toLowerCase().trim())
+      const existingTitlesAndAuthors = new Set(
+        existingBooks.map(book => {
+          const normalizedTitle = book.title.toLowerCase().trim().replace(/[^\w\s]/g, '');
+          const normalizedAuthor = book.author.toLowerCase().trim().replace(/[^\w\s]/g, '');
+          return `${normalizedTitle}|${normalizedAuthor}`;
+        })
+      );
+
+      const existingISBNs = new Set(
+        existingBooks.filter(book => book.isbn).map(book => book.isbn)
       );
 
       const availableBooks = data.items.filter((item: any) => {
-        const bookTitle = item.volumeInfo?.title?.toLowerCase().trim();
-        return bookTitle && !existingTitles.has(bookTitle);
+        const bookInfo = item.volumeInfo;
+        if (!bookInfo?.title || !bookInfo?.authors) return false;
+
+        const normalizedTitle = bookInfo.title.toLowerCase().trim().replace(/[^\w\s]/g, '');
+        const normalizedAuthor = (bookInfo.authors[0] || '').toLowerCase().trim().replace(/[^\w\s]/g, '');
+        const titleAuthorKey = `${normalizedTitle}|${normalizedAuthor}`;
+
+        if (existingTitlesAndAuthors.has(titleAuthorKey)) {
+          return false;
+        }
+
+        const isbn13 = bookInfo.industryIdentifiers?.find((id: any) => id.type === 'ISBN_13')?.identifier;
+        const isbn10 = bookInfo.industryIdentifiers?.find((id: any) => id.type === 'ISBN_10')?.identifier;
+
+        if ((isbn13 && existingISBNs.has(isbn13)) || (isbn10 && existingISBNs.has(isbn10))) {
+          return false;
+        }
+
+        return true;
       });
 
       if (availableBooks.length === 0) {
