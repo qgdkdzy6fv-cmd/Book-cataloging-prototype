@@ -238,45 +238,50 @@ function AppContent() {
               <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                 <button
                   onClick={() => setCatalogModalOpen(true)}
-                  className="flex items-center justify-center gap-1.5 sm:gap-2 bg-slate-600 text-white px-3 py-2 rounded-lg hover:bg-slate-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                  className="flex items-center justify-center gap-1.5 sm:gap-2 bg-slate-600 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-slate-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                  aria-label="Catalogs"
                 >
-                  <FolderOpen size={16} className="flex-shrink-0" />
-                  <span className="truncate">Catalogs</span>
+                  <FolderOpen size={18} className="flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Catalogs</span>
                 </button>
 
                 <button
                   onClick={() => setImportModalOpen(true)}
-                  className="flex items-center justify-center gap-1.5 sm:gap-2 bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                  className="flex items-center justify-center gap-1.5 sm:gap-2 bg-blue-500 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                  aria-label="Import"
                 >
-                  <Upload size={16} className="flex-shrink-0" />
-                  <span className="truncate">Import</span>
+                  <Upload size={18} className="flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Import</span>
                 </button>
 
                 {books.length > 0 && (
                   <button
                     onClick={() => setExportModalOpen(true)}
-                    className="flex items-center justify-center gap-1.5 sm:gap-2 bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                    className="flex items-center justify-center gap-1.5 sm:gap-2 bg-green-600 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-green-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                    aria-label="Export"
                   >
-                    <Download size={16} className="flex-shrink-0" />
-                    <span className="truncate">Export</span>
+                    <Download size={18} className="flex-shrink-0" />
+                    <span className="hidden sm:inline truncate">Export</span>
                   </button>
                 )}
 
                 {isGuest ? (
                   <button
                     onClick={() => setAuthModalOpen(true)}
-                    className="flex items-center justify-center gap-1.5 sm:gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                    className="flex items-center justify-center gap-1.5 sm:gap-2 bg-blue-600 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                    aria-label="Sign In"
                   >
-                    <LogIn size={16} className="flex-shrink-0" />
-                    <span className="truncate sm:inline">Sign In</span>
+                    <LogIn size={18} className="flex-shrink-0" />
+                    <span className="hidden sm:inline truncate">Sign In</span>
                   </button>
                 ) : (
                   <button
                     onClick={() => signOut()}
-                    className="flex items-center justify-center gap-1.5 sm:gap-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                    className="flex items-center justify-center gap-1.5 sm:gap-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                    aria-label="Sign Out"
                   >
-                    <LogOut size={16} className="flex-shrink-0" />
-                    <span className="truncate hidden sm:inline">Sign Out</span>
+                    <LogOut size={18} className="flex-shrink-0" />
+                    <span className="hidden sm:inline truncate">Sign Out</span>
                   </button>
                 )}
 
