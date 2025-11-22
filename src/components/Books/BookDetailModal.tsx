@@ -515,6 +515,17 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                   <>
                     <button
                       onClick={() => {
+                        setEditedBook(book!);
+                        setDisplayBook(book!);
+                      }}
+                      disabled={loading}
+                      className="border border-orange-500 text-orange-600 dark:text-orange-400 py-2 px-4 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                    >
+                      <RotateCcw size={18} />
+                      Reset
+                    </button>
+                    <button
+                      onClick={() => {
                         setEditedBook(displayBook);
                         setIsEditing(false);
                       }}
