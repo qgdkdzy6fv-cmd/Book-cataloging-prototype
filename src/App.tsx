@@ -323,23 +323,28 @@ function AppContent() {
               </div>
             </div>
 
-            <BookFilters
-              filters={filters}
-              onFiltersChange={setFilters}
-              availableGenres={availableGenres}
-              availableHolidays={availableHolidays}
-              availableTags={availableTags}
-            />
-
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-              <p className="text-gray-600 dark:text-gray-300 text-center sm:text-left">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <BookFilters
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  availableGenres={availableGenres}
+                  availableHolidays={availableHolidays}
+                  availableTags={availableTags}
+                />
+                <RandomBookPicker
+                  onPickRandom={handlePickRandom}
+                  disabled={filteredBooks.length === 0}
+                />
+              </div>
+              <p className="text-gray-600 dark:text-gray-300 hidden sm:block">
                 Showing {filteredBooks.length} of {books.length} book{books.length !== 1 ? 's' : ''}
               </p>
-              <RandomBookPicker
-                onPickRandom={handlePickRandom}
-                disabled={filteredBooks.length === 0}
-              />
             </div>
+
+            <p className="text-gray-600 dark:text-gray-300 mb-4 sm:hidden">
+              Showing {filteredBooks.length} of {books.length} book{books.length !== 1 ? 's' : ''}
+            </p>
           </>
         )}
 
