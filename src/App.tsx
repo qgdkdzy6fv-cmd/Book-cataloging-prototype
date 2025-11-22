@@ -174,110 +174,120 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 transition-colors">
       <header className="bg-white dark:bg-gray-800 shadow-md transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Library size={32} className="text-blue-600 dark:text-blue-400" />
-              <div>
-                {isEditingTitle ? (
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={editedTitle}
-                      onChange={(e) => setEditedTitle(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSaveTitle()}
-                      className="text-2xl font-bold text-gray-900 dark:text-white dark:bg-gray-700 border-2 border-blue-600 rounded px-2 py-1 focus:outline-none"
-                      autoFocus
-                    />
-                    <button
-                      onClick={handleSaveTitle}
-                      className="text-green-600 hover:text-green-700"
-                    >
-                      <Check size={24} />
-                    </button>
-                    <button
-                      onClick={() => setIsEditingTitle(false)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <X size={24} />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{activeCatalog?.name || 'My Book Catalog'}</h1>
-                    <button
-                      onClick={startEditingTitle}
-                      className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-                    >
-                      <Edit2 size={18} />
-                    </button>
-                  </div>
-                )}
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {isGuest ? 'Guest Mode (Local Storage)' : `Signed in as ${user?.email}`}
-                </p>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                <Library size={28} className="text-blue-600 dark:text-blue-400 flex-shrink-0 sm:w-8 sm:h-8" />
+                <div className="min-w-0 flex-1">
+                  {isEditingTitle ? (
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <input
+                        type="text"
+                        value={editedTitle}
+                        onChange={(e) => setEditedTitle(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSaveTitle()}
+                        className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white dark:bg-gray-700 border-2 border-blue-600 rounded px-2 py-1 focus:outline-none min-w-0 flex-1"
+                        autoFocus
+                      />
+                      <button
+                        onClick={handleSaveTitle}
+                        className="text-green-600 hover:text-green-700 flex-shrink-0"
+                      >
+                        <Check size={20} className="sm:w-6 sm:h-6" />
+                      </button>
+                      <button
+                        onClick={() => setIsEditingTitle(false)}
+                        className="text-red-600 hover:text-red-700 flex-shrink-0"
+                      >
+                        <X size={20} className="sm:w-6 sm:h-6" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+                      <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">{activeCatalog?.name || 'My Book Catalog'}</h1>
+                      <button
+                        onClick={startEditingTitle}
+                        className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 flex-shrink-0"
+                      >
+                        <Edit2 size={16} className="sm:w-[18px] sm:h-[18px]" />
+                      </button>
+                    </div>
+                  )}
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">
+                    {isGuest ? 'Guest Mode (Local Storage)' : `Signed in as ${user?.email}`}
+                  </p>
+                </div>
               </div>
-            </div>
-
-            <div className="flex flex-col items-center gap-1">
-              <div className="flex items-center gap-1">
-                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded">BETA</span>
-              </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Export your catalog to avoid losing progress</p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setCatalogModalOpen(true)}
-                className="flex items-center gap-2 bg-slate-600 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors"
-              >
-                <FolderOpen size={18} />
-                Catalogs
-              </button>
-
-              <button
-                onClick={() => setImportModalOpen(true)}
-                className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-              >
-                <Upload size={18} />
-                Import
-              </button>
-
-              {books.length > 0 && (
-                <button
-                  onClick={() => setExportModalOpen(true)}
-                  className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  <Download size={18} />
-                  Export
-                </button>
-              )}
-
-              {isGuest ? (
-                <button
-                  onClick={() => setAuthModalOpen(true)}
-                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <LogIn size={18} />
-                  Sign In
-                </button>
-              ) : (
-                <button
-                  onClick={() => signOut()}
-                  className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <LogOut size={18} />
-                  Sign Out
-                </button>
-              )}
 
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0 lg:hidden"
                 aria-label="Toggle dark mode"
               >
-                {isDark ? <Sun size={20} className="text-gray-700 dark:text-gray-200" /> : <Moon size={20} className="text-gray-700" />}
+                {isDark ? <Sun size={18} className="text-gray-700 dark:text-gray-200" /> : <Moon size={18} className="text-gray-700" />}
               </button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 lg:gap-4">
+              <div className="hidden sm:flex flex-col items-center gap-1 lg:order-first">
+                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded whitespace-nowrap">BETA</span>
+                <p className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap hidden lg:block">Export your catalog to avoid losing progress</p>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                <button
+                  onClick={() => setCatalogModalOpen(true)}
+                  className="flex items-center justify-center gap-1.5 sm:gap-2 bg-slate-600 text-white px-3 py-2 rounded-lg hover:bg-slate-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                >
+                  <FolderOpen size={16} className="flex-shrink-0" />
+                  <span className="truncate">Catalogs</span>
+                </button>
+
+                <button
+                  onClick={() => setImportModalOpen(true)}
+                  className="flex items-center justify-center gap-1.5 sm:gap-2 bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                >
+                  <Upload size={16} className="flex-shrink-0" />
+                  <span className="truncate">Import</span>
+                </button>
+
+                {books.length > 0 && (
+                  <button
+                    onClick={() => setExportModalOpen(true)}
+                    className="flex items-center justify-center gap-1.5 sm:gap-2 bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                  >
+                    <Download size={16} className="flex-shrink-0" />
+                    <span className="truncate">Export</span>
+                  </button>
+                )}
+
+                {isGuest ? (
+                  <button
+                    onClick={() => setAuthModalOpen(true)}
+                    className="flex items-center justify-center gap-1.5 sm:gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                  >
+                    <LogIn size={16} className="flex-shrink-0" />
+                    <span className="truncate sm:inline">Sign In</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => signOut()}
+                    className="flex items-center justify-center gap-1.5 sm:gap-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
+                  >
+                    <LogOut size={16} className="flex-shrink-0" />
+                    <span className="truncate hidden sm:inline">Sign Out</span>
+                  </button>
+                )}
+
+                <button
+                  onClick={toggleTheme}
+                  className="hidden lg:flex p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+                  aria-label="Toggle dark mode"
+                >
+                  {isDark ? <Sun size={20} className="text-gray-700 dark:text-gray-200" /> : <Moon size={20} className="text-gray-700" />}
+                </button>
+              </div>
             </div>
           </div>
         </div>
