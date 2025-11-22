@@ -249,8 +249,6 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 transition-colors">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Add New Book</h2>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div ref={titleInputRef} className="relative">
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
