@@ -23,6 +23,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
   const [isDragging, setIsDragging] = useState(false);
   const [resettingImage, setResettingImage] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropZoneRef = useRef<HTMLDivElement>(null);
@@ -140,13 +141,14 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setShowUploadModal(false);
     await uploadImage(file);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    if (isEditing && !uploadingImage) {
+    if (!uploadingImage) {
       setIsDragging(true);
     }
   };
@@ -162,7 +164,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
     e.stopPropagation();
     setIsDragging(false);
 
-    if (!isEditing || uploadingImage) return;
+    if (uploadingImage) return;
 
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
@@ -172,6 +174,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
       return;
     }
 
+    setShowUploadModal(false);
     await uploadImage(file);
   };
 
@@ -294,7 +297,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                   disabled={uploadingImage}
                 />
                 <button
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => setShowUploadModal(true)}
                   disabled={uploadingImage || resettingImage}
                   className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
                 >
@@ -306,7 +309,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                   ) : (
                     <>
                       <ImageIcon size={16} />
-                      Upload or Drop Image
+                      Upload Image
                     </>
                   )}
                 </button>
@@ -576,6 +579,52 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                 >
                   <Trash2 size={18} />
                   {loading ? 'Removing...' : 'Remove Book'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showUploadModal && (
+          <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 rounded-lg p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                Upload Cover Image
+              </h3>
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`border-2 border-dashed rounded-lg p-8 text-center mb-4 transition-colors ${
+                  isDragging
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                    : 'border-gray-300 dark:border-gray-600'
+                }`}
+              >
+                <Upload className={`mx-auto mb-4 ${isDragging ? 'text-blue-500' : 'text-gray-400 dark:text-gray-500'}`} size={48} />
+                <label className="cursor-pointer">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    disabled={uploadingImage}
+                  />
+                  <span className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
+                    Choose a file
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400"> or drag and drop</span>
+                </label>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">JPG, PNG or WEBP</p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowUploadModal(false)}
+                  disabled={uploadingImage}
+                  className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                >
+                  Cancel
                 </button>
               </div>
             </div>
