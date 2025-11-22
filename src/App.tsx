@@ -331,8 +331,8 @@ function AppContent() {
               availableTags={availableTags}
             />
 
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-gray-600 dark:text-gray-300">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+              <p className="text-gray-600 dark:text-gray-300 text-center sm:text-left">
                 Showing {filteredBooks.length} of {books.length} book{books.length !== 1 ? 's' : ''}
               </p>
               <RandomBookPicker
