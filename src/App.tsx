@@ -229,12 +229,13 @@ function AppContent() {
               </button>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 lg:gap-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 lg:gap-4">
               <div className="hidden sm:flex flex-col items-center gap-1 lg:order-first">
                 <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded whitespace-nowrap">BETA</span>
                 <p className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap hidden lg:block">Export your catalog to avoid losing progress</p>
               </div>
 
+              <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
               <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                 <button
                   onClick={() => setCatalogModalOpen(true)}
@@ -292,6 +293,12 @@ function AppContent() {
                 >
                   {isDark ? <Sun size={20} className="text-gray-700 dark:text-gray-200" /> : <Moon size={20} className="text-gray-700" />}
                 </button>
+              </div>
+
+              <div className="flex sm:hidden flex-col items-center gap-1 text-center">
+                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded whitespace-nowrap">BETA</span>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Export your catalog to avoid losing progress</p>
+              </div>
               </div>
             </div>
           </div>
