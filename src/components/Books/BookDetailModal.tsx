@@ -317,45 +317,35 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                 <button
                   onClick={() => setShowUploadModal(true)}
                   disabled={uploadingImage || resettingImage}
-                  className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                  className="flex-1 flex items-center justify-center bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  title="Upload Image"
                 >
                   {uploadingImage ? (
-                    <>
-                      <Upload size={16} className="animate-pulse" />
-                      Uploading...
-                    </>
+                    <Upload size={20} className="animate-pulse" />
                   ) : (
-                    <>
-                      <ImageIcon size={16} />
-                      Upload Image
-                    </>
+                    <ImageIcon size={20} />
                   )}
                 </button>
                 <button
                   onClick={handleResetToDefault}
                   disabled={loading || uploadingImage || resettingImage}
-                  className="w-full flex items-center justify-center gap-2 border border-green-600 text-green-600 px-4 py-2 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                  className="flex-1 flex items-center justify-center border border-green-600 text-green-600 p-3 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  title="Reset to Original"
                 >
                   {resettingImage ? (
-                    <>
-                      <RotateCcw size={16} className="animate-spin" />
-                      Finding Original...
-                    </>
+                    <RotateCcw size={20} className="animate-spin" />
                   ) : (
-                    <>
-                      <RotateCcw size={16} />
-                      Reset to Original
-                    </>
+                    <RotateCcw size={20} />
                   )}
                 </button>
                 {editedBook.cover_image_url && (
                   <button
                     onClick={handleRemoveImage}
                     disabled={loading || uploadingImage || resettingImage}
-                    className="w-full flex items-center justify-center gap-2 border border-red-600 text-red-600 px-4 py-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                    className="flex-1 flex items-center justify-center border border-red-600 text-red-600 p-3 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title="Remove Image"
                   >
-                    <X size={16} />
-                    Remove Image
+                    <X size={20} />
                   </button>
                 )}
               </div>
