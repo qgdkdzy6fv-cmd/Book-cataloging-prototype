@@ -49,32 +49,38 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
   }, []);
 
   const fetchTitleSuggestions = async (searchTitle: string) => {
-    if (!author.trim()) {
-      setTitleSuggestions([]);
-      return;
-    }
-
-    if (searchTitle.trim() && searchTitle.trim().length < 2) {
-      setTitleSuggestions([]);
-      return;
+    if (!searchTitle.trim() || searchTitle.trim().length < 2) {
+      if (!author.trim()) {
+        setTitleSuggestions([]);
+        return;
+      }
+      if (!searchTitle.trim() && !author.trim()) {
+        setTitleSuggestions([]);
+        return;
+      }
     }
 
     setLoadingTitleSuggestions(true);
     try {
       let query = '';
+      let startIndex = 0;
+      let maxResults = 5;
 
       if (author.trim() && !searchTitle.trim()) {
         query = `inauthor:${encodeURIComponent(author.trim())}`;
+        startIndex = Math.floor(Math.random() * 20);
+        maxResults = 40;
       } else if (searchTitle.trim()) {
         query = `intitle:${encodeURIComponent(searchTitle.trim())}`;
         if (author.trim()) {
           query += `+inauthor:${encodeURIComponent(author.trim())}`;
+          startIndex = Math.floor(Math.random() * 20);
+          maxResults = 40;
         }
       }
 
-      const startIndex = Math.floor(Math.random() * 20);
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=40&startIndex=${startIndex}`
+        `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=${maxResults}&startIndex=${startIndex}`
       );
 
       if (!response.ok) {
@@ -98,8 +104,12 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
           )
         );
 
-        const shuffled = uniqueBooks.sort(() => Math.random() - 0.5);
-        setTitleSuggestions(shuffled.slice(0, 5));
+        if (author.trim()) {
+          const shuffled = uniqueBooks.sort(() => Math.random() - 0.5);
+          setTitleSuggestions(shuffled.slice(0, 5));
+        } else {
+          setTitleSuggestions(uniqueBooks.slice(0, 5));
+        }
       } else {
         setTitleSuggestions([]);
       }
@@ -161,13 +171,7 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
       clearTimeout(titleDebounceRef.current);
     }
 
-    if (!author.trim()) {
-      setTitleSuggestions([]);
-      setShowTitleSuggestions(false);
-      return;
-    }
-
-    if (value.trim().length >= 2 || value.trim().length === 0) {
+    if (value.trim().length >= 2 || (value.trim().length === 0 && author.trim())) {
       setShowTitleSuggestions(true);
       titleDebounceRef.current = setTimeout(() => {
         fetchTitleSuggestions(value);
