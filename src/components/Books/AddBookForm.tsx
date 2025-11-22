@@ -49,7 +49,12 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
   }, []);
 
   const fetchTitleSuggestions = async (searchTitle: string) => {
-    if (!author.trim() && (!searchTitle.trim() || searchTitle.trim().length < 2)) {
+    if (!author.trim()) {
+      setTitleSuggestions([]);
+      return;
+    }
+
+    if (searchTitle.trim() && searchTitle.trim().length < 2) {
       setTitleSuggestions([]);
       return;
     }
@@ -156,7 +161,13 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
       clearTimeout(titleDebounceRef.current);
     }
 
-    if (value.trim().length >= 2 || (value.trim().length === 0 && author.trim())) {
+    if (!author.trim()) {
+      setTitleSuggestions([]);
+      setShowTitleSuggestions(false);
+      return;
+    }
+
+    if (value.trim().length >= 2 || value.trim().length === 0) {
       setShowTitleSuggestions(true);
       titleDebounceRef.current = setTimeout(() => {
         fetchTitleSuggestions(value);
