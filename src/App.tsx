@@ -223,7 +223,7 @@ function AppContent() {
               <div className="flex items-center gap-1">
                 <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded">BETA</span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Export your work to avoid losing progress</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Export your catalog to avoid losing progress</p>
             </div>
 
             <div className="flex items-center gap-3">
