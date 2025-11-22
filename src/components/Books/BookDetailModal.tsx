@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Save, Trash2, BookOpen, Tag as TagIcon, Upload, Image as ImageIcon, RotateCcw } from 'lucide-react';
+import { X, Save, Trash2, BookOpen, Tag as TagIcon, Upload, Image as ImageIcon, RotateCcw, XCircle } from 'lucide-react';
 import { bookService } from '../../services/bookService';
 import { uploadBookCover, deleteBookCover } from '../../services/imageUploadService';
 import { enrichBookData } from '../../services/bookApi';
@@ -521,10 +521,10 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
               <button
                 onClick={() => setShowDeleteConfirm(true)}
                 disabled={loading}
-                className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                className="bg-red-600 text-white p-3 rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                title="Delete"
               >
-                <Trash2 size={18} />
-                Delete
+                <Trash2 size={20} />
               </button>
 
               <div className="flex gap-2">
@@ -536,27 +536,28 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                         setDisplayBook(book!);
                       }}
                       disabled={loading}
-                      className="border border-orange-500 text-orange-600 dark:text-orange-400 py-2 px-4 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                      className="border border-orange-500 text-orange-600 dark:text-orange-400 p-3 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      title="Reset"
                     >
-                      <RotateCcw size={18} />
-                      Reset
+                      <RotateCcw size={20} />
                     </button>
                     <button
                       onClick={() => {
                         setEditedBook(displayBook);
                         setIsEditing(false);
                       }}
-                      className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 p-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      title="Cancel"
                     >
-                      Cancel
+                      <XCircle size={20} />
                     </button>
                     <button
                       onClick={handleSave}
                       disabled={loading}
-                      className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                      className="bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      title="Save"
                     >
-                      <Save size={18} />
-                      Save
+                      <Save size={20} />
                     </button>
                   </>
                 ) : (
