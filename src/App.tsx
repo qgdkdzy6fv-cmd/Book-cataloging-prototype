@@ -323,8 +323,8 @@ function AppContent() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:flex sm:items-center sm:gap-3">
                 <BookFilters
                   filters={filters}
                   onFiltersChange={setFilters}
