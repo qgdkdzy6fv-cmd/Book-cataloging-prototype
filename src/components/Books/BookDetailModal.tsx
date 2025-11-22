@@ -38,6 +38,17 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
     }
   }, [book]);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   if (!isOpen || !displayBook) return null;
 
   const handleSave = async () => {
