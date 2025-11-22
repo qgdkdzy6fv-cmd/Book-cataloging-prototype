@@ -244,8 +244,8 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto overscroll-contain">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full my-8 relative transition-colors max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto overscroll-contain">
+      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full m-4 relative transition-colors max-h-[calc(100vh-2rem)] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 z-10"
