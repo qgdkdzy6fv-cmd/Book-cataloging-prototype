@@ -310,9 +310,6 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                     </>
                   )}
                 </button>
-                <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                  Click to browse or drag & drop
-                </p>
                 <button
                   onClick={handleResetToDefault}
                   disabled={loading || uploadingImage || resettingImage}
