@@ -330,7 +330,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                   onClick={handleResetToDefault}
                   disabled={loading || uploadingImage || resettingImage}
                   className="flex-1 flex items-center justify-center border border-green-600 text-green-600 p-2 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  title="Reset to Original"
+                  title="Reset Image"
                 >
                   {resettingImage ? (
                     <RotateCcw size={18} className="animate-spin" />
