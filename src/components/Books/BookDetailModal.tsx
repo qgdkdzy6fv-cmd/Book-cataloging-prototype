@@ -256,11 +256,12 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto overscroll-contain"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto overscroll-contain touch-pan-y"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full m-4 relative transition-colors max-h-[calc(100vh-2rem)] overflow-y-auto overflow-x-hidden"
+        className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full m-4 relative transition-colors max-h-[calc(100vh-2rem)] overflow-y-auto touch-pan-y"
+        style={{ overflowX: 'hidden', maxWidth: '100%' }}
         onClick={(e) => e.stopPropagation()}
       >
         <button
