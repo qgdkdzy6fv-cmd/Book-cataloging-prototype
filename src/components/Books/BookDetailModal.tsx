@@ -305,7 +305,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
             </div>
 
             {isEditing && (
-              <div className="flex flex-col gap-2 w-full">
+              <div className="flex gap-2 w-full">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -317,35 +317,35 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                 <button
                   onClick={() => setShowUploadModal(true)}
                   disabled={uploadingImage || resettingImage}
-                  className="flex-1 flex items-center justify-center bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex-1 flex items-center justify-center bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   title="Upload Image"
                 >
                   {uploadingImage ? (
-                    <Upload size={20} className="animate-pulse" />
+                    <Upload size={18} className="animate-pulse" />
                   ) : (
-                    <ImageIcon size={20} />
+                    <ImageIcon size={18} />
                   )}
                 </button>
                 <button
                   onClick={handleResetToDefault}
                   disabled={loading || uploadingImage || resettingImage}
-                  className="flex-1 flex items-center justify-center border border-green-600 text-green-600 p-3 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex-1 flex items-center justify-center border border-green-600 text-green-600 p-2 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   title="Reset to Original"
                 >
                   {resettingImage ? (
-                    <RotateCcw size={20} className="animate-spin" />
+                    <RotateCcw size={18} className="animate-spin" />
                   ) : (
-                    <RotateCcw size={20} />
+                    <RotateCcw size={18} />
                   )}
                 </button>
                 {editedBook.cover_image_url && (
                   <button
                     onClick={handleRemoveImage}
                     disabled={loading || uploadingImage || resettingImage}
-                    className="flex-1 flex items-center justify-center border border-red-600 text-red-600 p-3 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="flex-1 flex items-center justify-center border border-red-600 text-red-600 p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     title="Remove Image"
                   >
-                    <X size={20} />
+                    <X size={18} />
                   </button>
                 )}
               </div>
