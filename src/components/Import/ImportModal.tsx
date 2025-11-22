@@ -147,7 +147,7 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
 
   const renderUploadStage = () => (
     <>
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Import Books</h2>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Import Catalog</h2>
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
         Upload a CSV or HTML file that was previously exported from this application
       </p>
@@ -302,7 +302,7 @@ export function ImportModal({ isOpen, onClose, catalogId, onImportComplete }: Im
 
   const renderImportingStage = () => (
     <>
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Importing Books</h2>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Importing Catalog</h2>
 
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">

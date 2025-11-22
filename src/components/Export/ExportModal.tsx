@@ -69,7 +69,7 @@ export function ExportModal({ isOpen, onClose, books, catalogName = 'book-catalo
           <X size={24} />
         </button>
 
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Export Books</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Export Catalog</h2>
         <p className="text-gray-600 dark:text-gray-400 mb-6">
           Export {books.length} book{books.length !== 1 ? 's' : ''} to your preferred format
         </p>
@@ -125,7 +125,7 @@ export function ExportModal({ isOpen, onClose, books, catalogName = 'book-catalo
           className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
         >
           <Download size={20} />
-          {loading ? 'Exporting...' : 'Export Books'}
+          {loading ? 'Exporting...' : 'Export Catalog'}
         </button>
       </div>
     </div>
