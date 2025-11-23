@@ -66,7 +66,7 @@ export function BookFilters({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 right-0 sm:right-auto mt-2 w-full sm:w-96 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50 max-h-[500px] overflow-y-auto">
+        <div className="fixed sm:absolute inset-x-4 sm:inset-x-auto sm:left-0 sm:right-auto mt-2 w-auto sm:w-96 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50 max-h-[500px] overflow-y-auto">
           <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-800">
             <h3 className="font-semibold text-gray-900 dark:text-white">Filter Options</h3>
             {hasActiveFilters && (
