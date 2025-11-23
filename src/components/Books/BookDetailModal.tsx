@@ -24,6 +24,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
   const [resettingImage, setResettingImage] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropZoneRef = useRef<HTMLDivElement>(null);
@@ -221,9 +222,10 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
     }
   };
 
-  const handleResetToDefault = async () => {
+  const handleResetImage = async () => {
     setResettingImage(true);
     setError('');
+    setShowResetModal(false);
 
     try {
       const oldImageUrl = editedBook.cover_image_url;
@@ -252,6 +254,12 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
     } finally {
       setResettingImage(false);
     }
+  };
+
+  const handleResetInfo = () => {
+    setEditedBook(book!);
+    setDisplayBook(book!);
+    setShowResetModal(false);
   };
 
   return (
@@ -327,10 +335,10 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                   )}
                 </button>
                 <button
-                  onClick={handleResetToDefault}
+                  onClick={() => setShowResetModal(true)}
                   disabled={loading || uploadingImage || resettingImage}
                   className="flex-1 flex items-center justify-center border border-green-600 text-green-600 p-2 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  title="Reset Image"
+                  title="Reset"
                 >
                   {resettingImage ? (
                     <RotateCcw size={18} className="animate-spin" />
@@ -512,10 +520,7 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                 {isEditing ? (
                   <>
                     <button
-                      onClick={() => {
-                        setEditedBook(book!);
-                        setDisplayBook(book!);
-                      }}
+                      onClick={() => setShowResetModal(true)}
                       disabled={loading}
                       className="border border-orange-500 text-orange-600 dark:text-orange-400 p-3 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       title="Reset"
@@ -622,6 +627,44 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                   onClick={() => setShowUploadModal(false)}
                   disabled={uploadingImage}
                   className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showResetModal && (
+          <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 rounded-lg p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                Reset Options
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-6">
+                What would you like to reset?
+              </p>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={handleResetImage}
+                  disabled={resettingImage || loading}
+                  className="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                >
+                  <ImageIcon size={20} />
+                  {resettingImage ? 'Resetting Image...' : 'Reset Image'}
+                </button>
+                <button
+                  onClick={handleResetInfo}
+                  disabled={resettingImage || loading}
+                  className="w-full flex items-center justify-center gap-2 bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50"
+                >
+                  <BookOpen size={20} />
+                  Reset Info
+                </button>
+                <button
+                  onClick={() => setShowResetModal(false)}
+                  disabled={resettingImage || loading}
+                  className="w-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
