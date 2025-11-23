@@ -151,7 +151,7 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
                 title="Custom Color"
                 aria-label="Custom Color"
               >
-                {!customColor && <Palette size={20} className="text-white drop-shadow" />}
+                <Palette size={20} className="text-white drop-shadow" />
               </button>
               <input
                 ref={colorInputRef}
