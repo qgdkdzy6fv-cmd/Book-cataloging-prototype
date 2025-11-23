@@ -226,7 +226,7 @@ function AppContent() {
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="relative lg:hidden">
+                <div className="relative lg:hidden" ref={settingsRef}>
                 <button
                   onClick={() => setSettingsOpen(!settingsOpen)}
                   className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
