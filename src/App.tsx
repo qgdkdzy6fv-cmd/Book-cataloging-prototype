@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Library, LogIn, LogOut, Download, Upload, Search, FolderOpen, Edit2, Check, X, Sun, Moon } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Library, LogIn, LogOut, Download, Upload, Search, FolderOpen, Edit2, Check, X, Sun, Moon, Menu } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { useTheme } from './contexts/ThemeContext';
 import { AuthModal } from './components/Auth/AuthModal';
@@ -33,10 +33,23 @@ function AppContent() {
   const [bookDetailOpen, setBookDetailOpen] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const settingsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadCatalogs();
   }, [user]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
+        setSettingsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (activeCatalogId) {
@@ -220,13 +233,93 @@ function AppContent() {
                 </div>
               </div>
 
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0 lg:hidden"
-                aria-label="Toggle dark mode"
-              >
-                {isDark ? <Sun size={18} className="text-gray-700 dark:text-gray-200" /> : <Moon size={18} className="text-gray-700" />}
-              </button>
+              <div className="flex items-center gap-2">
+                <div className="flex sm:hidden flex-col items-center gap-1">
+                  <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded whitespace-nowrap">BETA</span>
+                </div>
+
+                <div ref={settingsRef} className="relative lg:hidden">
+                <button
+                  onClick={() => setSettingsOpen(!settingsOpen)}
+                  className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+                  aria-label="Menu"
+                >
+                  <Menu size={18} className="text-gray-700 dark:text-gray-200" />
+                </button>
+
+                {settingsOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
+                    <div className="py-2">
+                      <button
+                        onClick={() => {
+                          toggleTheme();
+                          setSettingsOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                      >
+                        {isDark ? <Sun size={18} /> : <Moon size={18} />}
+                        {isDark ? 'Light Mode' : 'Dark Mode'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setCatalogModalOpen(true);
+                          setSettingsOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                      >
+                        <FolderOpen size={18} />
+                        Catalogs
+                      </button>
+                      <button
+                        onClick={() => {
+                          setImportModalOpen(true);
+                          setSettingsOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                      >
+                        <Upload size={18} />
+                        Import
+                      </button>
+                      {books.length > 0 && (
+                        <button
+                          onClick={() => {
+                            setExportModalOpen(true);
+                            setSettingsOpen(false);
+                          }}
+                          className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                        >
+                          <Download size={18} />
+                          Export
+                        </button>
+                      )}
+                      {isGuest ? (
+                        <button
+                          onClick={() => {
+                            setAuthModalOpen(true);
+                            setSettingsOpen(false);
+                          }}
+                          className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                        >
+                          <LogIn size={18} />
+                          Sign In
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            signOut();
+                            setSettingsOpen(false);
+                          }}
+                          className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                        >
+                          <LogOut size={18} />
+                          Sign Out
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+              </div>
             </div>
 
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 lg:gap-4">
@@ -235,7 +328,7 @@ function AppContent() {
                 <p className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap hidden lg:block">Export your catalog to avoid losing progress</p>
               </div>
 
-              <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+              <div className="hidden lg:flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
               <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                 <button
                   onClick={() => setCatalogModalOpen(true)}
@@ -288,16 +381,11 @@ function AppContent() {
 
                 <button
                   onClick={toggleTheme}
-                  className="hidden lg:flex p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+                  className="flex p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
                   aria-label="Toggle dark mode"
                 >
                   {isDark ? <Sun size={20} className="text-gray-700 dark:text-gray-200" /> : <Moon size={20} className="text-gray-700" />}
                 </button>
-              </div>
-
-              <div className="flex sm:hidden items-center justify-center gap-2 text-center">
-                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded whitespace-nowrap">BETA</span>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Export your catalog to avoid losing progress</p>
               </div>
               </div>
             </div>
