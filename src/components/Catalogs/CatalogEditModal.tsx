@@ -36,7 +36,8 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
   const [selectedIcon, setSelectedIcon] = useState(catalogIcon);
   const [selectedColor, setSelectedColor] = useState(catalogColor);
   const [customColor, setCustomColor] = useState<string | null>(null);
-  const colorInputRef = useRef<HTMLInputElement>(null);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [tempColor, setTempColor] = useState('#667eea');
 
   if (!isOpen) return null;
 
@@ -141,7 +142,7 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
               })}
               <button
                 type="button"
-                onClick={() => colorInputRef.current?.click()}
+                onClick={() => setShowColorPicker(true)}
                 className={`w-10 h-10 rounded-full border-4 transition-all flex items-center justify-center ${
                   customColor
                     ? 'border-gray-900 dark:border-white scale-110'
@@ -153,15 +154,6 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
               >
                 {!customColor && <Palette size={20} className="text-white drop-shadow" />}
               </button>
-              <input
-                ref={colorInputRef}
-                type="color"
-                className="hidden"
-                onChange={(e) => {
-                  setCustomColor(e.target.value);
-                  setSelectedColor(`custom:${e.target.value}`);
-                }}
-              />
             </div>
           </div>
         </div>
@@ -181,6 +173,71 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
           </button>
         </div>
       </div>
+
+      {showColorPicker && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Choose Custom Color</h3>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-center">
+                <input
+                  type="color"
+                  value={tempColor}
+                  onChange={(e) => setTempColor(e.target.value)}
+                  className="w-32 h-32 rounded-lg cursor-pointer border-4 border-gray-200 dark:border-gray-600"
+                  style={{
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'none',
+                    appearance: 'none',
+                    background: 'none'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Color Code
+                </label>
+                <input
+                  type="text"
+                  value={tempColor}
+                  onChange={(e) => setTempColor(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white font-mono text-sm"
+                  placeholder="#667eea"
+                />
+              </div>
+
+              <div className="flex items-center justify-center gap-2">
+                <div
+                  className="w-16 h-16 rounded-lg border-2 border-gray-300 dark:border-gray-600"
+                  style={{ backgroundColor: tempColor }}
+                />
+                <span className="text-sm text-gray-600 dark:text-gray-400">Preview</span>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setShowColorPicker(false)}
+                className="px-4 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-lg transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setCustomColor(tempColor);
+                  setSelectedColor(`custom:${tempColor}`);
+                  setShowColorPicker(false);
+                }}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                Apply Color
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
