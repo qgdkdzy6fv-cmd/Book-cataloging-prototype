@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Library, Book, Bookmark, BookOpen, Heart, Star, Flame, Sparkles, Award, Crown, Palette } from 'lucide-react';
+import { X, Library, Book, Bookmark, BookOpen, Heart, Star, Flame, Sparkles, Award, Crown, Users, GraduationCap, Home, Briefcase, Music } from 'lucide-react';
 
 interface CatalogEditModalProps {
   isOpen: boolean;
@@ -21,6 +21,11 @@ const ICON_OPTIONS = [
   { name: 'Sparkles', component: Sparkles },
   { name: 'Award', component: Award },
   { name: 'Crown', component: Crown },
+  { name: 'Users', component: Users },
+  { name: 'GraduationCap', component: GraduationCap },
+  { name: 'Home', component: Home },
+  { name: 'Briefcase', component: Briefcase },
+  { name: 'Music', component: Music },
 ];
 
 const COLOR_OPTIONS = [
@@ -29,6 +34,11 @@ const COLOR_OPTIONS = [
   { name: 'Red', hex: '#dc2626', class: 'text-red-600 dark:text-red-400', bg: 'bg-red-600', border: 'border-red-600' },
   { name: 'Orange', hex: '#ea580c', class: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-600', border: 'border-orange-600' },
   { name: 'Pink', hex: '#db2777', class: 'text-pink-600 dark:text-pink-400', bg: 'bg-pink-600', border: 'border-pink-600' },
+  { name: 'Purple', hex: '#9333ea', class: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-600', border: 'border-purple-600' },
+  { name: 'Yellow', hex: '#ca8a04', class: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-600', border: 'border-yellow-600' },
+  { name: 'Teal', hex: '#0d9488', class: 'text-teal-600 dark:text-teal-400', bg: 'bg-teal-600', border: 'border-teal-600' },
+  { name: 'Cyan', hex: '#0891b2', class: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-600', border: 'border-cyan-600' },
+  { name: 'Emerald', hex: '#059669', class: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-600', border: 'border-emerald-600' },
 ];
 
 export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, catalogColor = 'Blue', onSave }: CatalogEditModalProps) {
@@ -94,7 +104,7 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
                   <button
                     key={iconName}
                     onClick={() => setSelectedIcon(iconName)}
-                    className={`p-3 rounded-lg border-2 transition-all ${
+                    className={`p-3 rounded-lg border-2 transition-all flex items-center justify-center ${
                       isSelected
                         ? isCustomColor
                           ? 'border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-900'
