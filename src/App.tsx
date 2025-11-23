@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Library, LogIn, LogOut, Download, Upload, Search, FolderOpen, Edit2, Check, X, Sun, Moon, Menu } from 'lucide-react';
+import { Library, LogIn, LogOut, Download, Upload, Search, FolderOpen, Edit2, Sun, Moon, Menu, Book, Bookmark, BookOpen, Heart, Star, Flame, Sparkles, Award, Crown } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { useTheme } from './contexts/ThemeContext';
 import { AuthModal } from './components/Auth/AuthModal';
@@ -11,6 +11,7 @@ import { BookDetailModal } from './components/Books/BookDetailModal';
 import { ExportModal } from './components/Export/ExportModal';
 import { ImportModal } from './components/Import/ImportModal';
 import { CatalogSelectorModal } from './components/Catalogs/CatalogSelectorModal';
+import { CatalogEditModal } from './components/Catalogs/CatalogEditModal';
 import { bookService } from './services/bookService';
 import { catalogService } from './services/catalogService';
 import type { Book, FilterOptions, Catalog } from './types';
@@ -31,8 +32,7 @@ function AppContent() {
   const [catalogModalOpen, setCatalogModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [bookDetailOpen, setBookDetailOpen] = useState(false);
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [editedTitle, setEditedTitle] = useState('');
+  const [catalogEditOpen, setCatalogEditOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
 
@@ -107,8 +107,8 @@ function AppContent() {
     catalogService.setActiveCatalogId(newCatalog.id);
   };
 
-  const handleUpdateCatalog = async (catalogId: string, name: string, description: string | null) => {
-    await catalogService.updateCatalog(user?.id || null, catalogId, name, description);
+  const handleUpdateCatalog = async (catalogId: string, name: string, description: string | null, icon?: string) => {
+    await catalogService.updateCatalog(user?.id || null, catalogId, name, description, icon);
     await loadCatalogs();
   };
 
@@ -117,8 +117,8 @@ function AppContent() {
     await loadCatalogs();
   };
 
-  const handleSaveTitle = async () => {
-    if (!editedTitle.trim() || !activeCatalogId) return;
+  const handleSaveCatalogEdit = async (name: string, icon: string) => {
+    if (!activeCatalogId) return;
 
     try {
       const activeCatalog = catalogs.find(c => c.id === activeCatalogId);
@@ -126,22 +126,14 @@ function AppContent() {
         await catalogService.updateCatalog(
           user?.id || null,
           activeCatalogId,
-          editedTitle.trim(),
-          activeCatalog.description
+          name,
+          activeCatalog.description,
+          icon
         );
         await loadCatalogs();
       }
-      setIsEditingTitle(false);
     } catch (error) {
-      console.error('Failed to update catalog name:', error);
-    }
-  };
-
-  const startEditingTitle = () => {
-    const activeCatalog = catalogs.find(c => c.id === activeCatalogId);
-    if (activeCatalog) {
-      setEditedTitle(activeCatalog.name);
-      setIsEditingTitle(true);
+      console.error('Failed to update catalog:', error);
     }
   };
 
@@ -191,42 +183,24 @@ function AppContent() {
           <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                <Library size={28} className="text-blue-600 dark:text-blue-400 flex-shrink-0 sm:w-8 sm:h-8" />
+                {(() => {
+                  const iconName = activeCatalog?.icon || 'Library';
+                  const iconMap: { [key: string]: any } = {
+                    Library, Book, Bookmark, BookOpen, Heart, Star, Flame, Sparkles, Award, Crown
+                  };
+                  const IconComponent = iconMap[iconName] || Library;
+                  return <IconComponent size={28} className="text-blue-600 dark:text-blue-400 flex-shrink-0 sm:w-8 sm:h-8" />;
+                })()}
                 <div className="min-w-0 flex-1">
-                  {isEditingTitle ? (
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <input
-                        type="text"
-                        value={editedTitle}
-                        onChange={(e) => setEditedTitle(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSaveTitle()}
-                        className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white dark:bg-gray-700 border-2 border-blue-600 rounded px-2 py-1 focus:outline-none min-w-0 flex-1"
-                        autoFocus
-                      />
-                      <button
-                        onClick={handleSaveTitle}
-                        className="text-green-600 hover:text-green-700 flex-shrink-0"
-                      >
-                        <Check size={20} className="sm:w-6 sm:h-6" />
-                      </button>
-                      <button
-                        onClick={() => setIsEditingTitle(false)}
-                        className="text-red-600 hover:text-red-700 flex-shrink-0"
-                      >
-                        <X size={20} className="sm:w-6 sm:h-6" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1 sm:gap-2 min-w-0">
-                      <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">{activeCatalog?.name || 'My Book Catalog'}</h1>
-                      <button
-                        onClick={startEditingTitle}
-                        className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 flex-shrink-0"
-                      >
-                        <Edit2 size={16} className="sm:w-[18px] sm:h-[18px]" />
-                      </button>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+                    <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">{activeCatalog?.name || 'My Book Catalog'}</h1>
+                    <button
+                      onClick={() => setCatalogEditOpen(true)}
+                      className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 flex-shrink-0"
+                    >
+                      <Edit2 size={16} className="sm:w-[18px] sm:h-[18px]" />
+                    </button>
+                  </div>
                   <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">
                     {isGuest ? 'Guest Mode (Local Storage)' : `Signed in as ${user?.email}`}
                   </p>
@@ -478,6 +452,13 @@ function AppContent() {
         onCreateCatalog={handleCreateCatalog}
         onUpdateCatalog={handleUpdateCatalog}
         onDeleteCatalog={handleDeleteCatalog}
+      />
+      <CatalogEditModal
+        isOpen={catalogEditOpen}
+        onClose={() => setCatalogEditOpen(false)}
+        catalogName={activeCatalog?.name || ''}
+        catalogIcon={activeCatalog?.icon || 'Library'}
+        onSave={handleSaveCatalogEdit}
       />
     </div>
   );
