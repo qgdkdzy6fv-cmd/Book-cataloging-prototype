@@ -156,7 +156,7 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
               <input
                 ref={colorInputRef}
                 type="color"
-                className="hidden"
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 pointer-events-none"
                 onChange={(e) => {
                   setCustomColor(e.target.value);
                   setSelectedColor(`custom:${e.target.value}`);
