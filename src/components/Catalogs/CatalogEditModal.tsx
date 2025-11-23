@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { X, Library, Book, Bookmark, BookOpen, Heart, Star, Flame, Sparkles, Award, Crown, Palette } from 'lucide-react';
 
 interface CatalogEditModalProps {
@@ -36,42 +36,6 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
   const [selectedIcon, setSelectedIcon] = useState(catalogIcon);
   const [selectedColor, setSelectedColor] = useState(catalogColor);
   const [customColor, setCustomColor] = useState<string | null>(null);
-  const [pickerPosition, setPickerPosition] = useState<{ top?: string; bottom?: string; left?: string; right?: string }>({});
-  const colorInputRef = useRef<HTMLInputElement>(null);
-  const colorButtonRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (colorButtonRef.current) {
-      const rect = colorButtonRef.current.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - rect.bottom;
-      const spaceAbove = rect.top;
-      const spaceRight = window.innerWidth - rect.right;
-      const spaceLeft = rect.left;
-
-      const pickerSize = 200;
-      const offset = 8;
-
-      let position: { top?: string; bottom?: string; left?: string; right?: string } = {};
-
-      if (spaceBelow >= pickerSize) {
-        position.top = `${rect.bottom + offset}px`;
-      } else if (spaceAbove >= pickerSize) {
-        position.bottom = `${window.innerHeight - rect.top + offset}px`;
-      } else {
-        position.top = `${rect.bottom + offset}px`;
-      }
-
-      if (spaceRight >= pickerSize / 2) {
-        position.left = `${rect.left + rect.width / 2}px`;
-      } else if (spaceLeft >= pickerSize / 2) {
-        position.right = `${window.innerWidth - rect.right + rect.width / 2}px`;
-      } else {
-        position.left = '50%';
-      }
-
-      setPickerPosition(position);
-    }
-  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -174,31 +138,6 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
                   />
                 );
               })}
-              <button
-                ref={colorButtonRef}
-                type="button"
-                onClick={() => colorInputRef.current?.click()}
-                className={`w-10 h-10 rounded-full border-4 transition-all flex items-center justify-center ${
-                  customColor
-                    ? 'border-gray-900 dark:border-white scale-110'
-                    : 'border-gray-200 dark:border-gray-600 hover:scale-105'
-                }`}
-                style={customColor ? { backgroundColor: customColor } : { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)' }}
-                title="Custom Color"
-                aria-label="Custom Color"
-              >
-                <Palette size={20} className="text-white drop-shadow" />
-              </button>
-              <input
-                ref={colorInputRef}
-                type="color"
-                className="fixed z-[60] w-12 h-12 cursor-pointer border-0"
-                style={pickerPosition}
-                onChange={(e) => {
-                  setCustomColor(e.target.value);
-                  setSelectedColor(`custom:${e.target.value}`);
-                }}
-              />
             </div>
           </div>
         </div>
