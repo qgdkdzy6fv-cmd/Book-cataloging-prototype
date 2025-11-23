@@ -36,6 +36,8 @@ function AppContent() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const mobileSettingsRef = useRef<HTMLDivElement>(null);
   const desktopSettingsRef = useRef<HTMLDivElement>(null);
+  const mobileButtonRef = useRef<HTMLButtonElement>(null);
+  const desktopButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     loadCatalogs();
@@ -43,10 +45,18 @@ function AppContent() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (mobileSettingsRef.current && !mobileSettingsRef.current.contains(event.target as Node)) {
-        setSettingsOpen(false);
+      const target = event.target as Node;
+      const clickedMobileButton = mobileButtonRef.current && mobileButtonRef.current.contains(target);
+      const clickedDesktopButton = desktopButtonRef.current && desktopButtonRef.current.contains(target);
+
+      if (clickedMobileButton || clickedDesktopButton) {
+        return;
       }
-      if (desktopSettingsRef.current && !desktopSettingsRef.current.contains(event.target as Node)) {
+
+      const clickedOutsideMobile = mobileSettingsRef.current && !mobileSettingsRef.current.contains(target);
+      const clickedOutsideDesktop = desktopSettingsRef.current && !desktopSettingsRef.current.contains(target);
+
+      if (clickedOutsideMobile || clickedOutsideDesktop) {
         setSettingsOpen(false);
       }
     };
@@ -232,10 +242,8 @@ function AppContent() {
               <div className="flex items-center gap-2">
                 <div className="relative lg:hidden" ref={mobileSettingsRef}>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSettingsOpen(!settingsOpen);
-                  }}
+                  ref={mobileButtonRef}
+                  onClick={() => setSettingsOpen(!settingsOpen)}
                   className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
                   aria-label="Menu"
                 >
@@ -325,10 +333,8 @@ function AppContent() {
             <div className="flex justify-end">
               <div className="hidden lg:block relative" ref={desktopSettingsRef}>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSettingsOpen(!settingsOpen);
-                  }}
+                  ref={desktopButtonRef}
+                  onClick={() => setSettingsOpen(!settingsOpen)}
                   className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
                   aria-label="Menu"
                 >
