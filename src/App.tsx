@@ -196,13 +196,18 @@ function AppContent() {
                     Red: 'text-red-600 dark:text-red-400',
                     Orange: 'text-orange-600 dark:text-orange-400',
                     Pink: 'text-pink-600 dark:text-pink-400',
-                    Teal: 'text-teal-600 dark:text-teal-400',
-                    Yellow: 'text-yellow-600 dark:text-yellow-400',
-                    Cyan: 'text-cyan-600 dark:text-cyan-400',
                   };
                   const IconComponent = iconMap[iconName] || Library;
+                  const isCustomColor = colorName.startsWith('custom:');
+                  const customColor = isCustomColor ? colorName.replace('custom:', '') : null;
                   const colorClass = colorMap[colorName] || colorMap.Blue;
-                  return <IconComponent size={28} className={`${colorClass} flex-shrink-0 sm:w-8 sm:h-8`} />;
+                  return (
+                    <IconComponent
+                      size={28}
+                      className={`${!isCustomColor ? colorClass : ''} flex-shrink-0 sm:w-8 sm:h-8`}
+                      style={isCustomColor ? { color: customColor } : undefined}
+                    />
+                  );
                 })()}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1 sm:gap-2 min-w-0">

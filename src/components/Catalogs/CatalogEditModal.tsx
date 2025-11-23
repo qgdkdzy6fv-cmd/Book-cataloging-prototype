@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { X, Library, Book, Bookmark, BookOpen, Heart, Star, Flame, Sparkles, Award, Crown } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { X, Library, Book, Bookmark, BookOpen, Heart, Star, Flame, Sparkles, Award, Crown, Palette } from 'lucide-react';
 
 interface CatalogEditModalProps {
   isOpen: boolean;
@@ -24,20 +24,19 @@ const ICON_OPTIONS = [
 ];
 
 const COLOR_OPTIONS = [
-  { name: 'Blue', class: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-600', border: 'border-blue-600' },
-  { name: 'Green', class: 'text-green-600 dark:text-green-400', bg: 'bg-green-600', border: 'border-green-600' },
-  { name: 'Red', class: 'text-red-600 dark:text-red-400', bg: 'bg-red-600', border: 'border-red-600' },
-  { name: 'Orange', class: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-600', border: 'border-orange-600' },
-  { name: 'Pink', class: 'text-pink-600 dark:text-pink-400', bg: 'bg-pink-600', border: 'border-pink-600' },
-  { name: 'Teal', class: 'text-teal-600 dark:text-teal-400', bg: 'bg-teal-600', border: 'border-teal-600' },
-  { name: 'Yellow', class: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-600', border: 'border-yellow-600' },
-  { name: 'Cyan', class: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-600', border: 'border-cyan-600' },
+  { name: 'Blue', hex: '#2563eb', class: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-600', border: 'border-blue-600' },
+  { name: 'Green', hex: '#16a34a', class: 'text-green-600 dark:text-green-400', bg: 'bg-green-600', border: 'border-green-600' },
+  { name: 'Red', hex: '#dc2626', class: 'text-red-600 dark:text-red-400', bg: 'bg-red-600', border: 'border-red-600' },
+  { name: 'Orange', hex: '#ea580c', class: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-600', border: 'border-orange-600' },
+  { name: 'Pink', hex: '#db2777', class: 'text-pink-600 dark:text-pink-400', bg: 'bg-pink-600', border: 'border-pink-600' },
 ];
 
 export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, catalogColor = 'Blue', onSave }: CatalogEditModalProps) {
   const [name, setName] = useState(catalogName);
   const [selectedIcon, setSelectedIcon] = useState(catalogIcon);
   const [selectedColor, setSelectedColor] = useState(catalogColor);
+  const [customColor, setCustomColor] = useState<string | null>(null);
+  const colorInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
@@ -89,21 +88,27 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
             </label>
             <div className="grid grid-cols-5 gap-3">
               {ICON_OPTIONS.map(({ name: iconName, component: IconComponent }) => {
+                const isCustomColor = customColor !== null;
                 const colorOption = COLOR_OPTIONS.find(c => c.name === selectedColor) || COLOR_OPTIONS[0];
+                const isSelected = selectedIcon === iconName;
+
                 return (
                   <button
                     key={iconName}
                     onClick={() => setSelectedIcon(iconName)}
                     className={`p-3 rounded-lg border-2 transition-all ${
-                      selectedIcon === iconName
-                        ? `${colorOption.border} bg-${selectedColor.toLowerCase()}-50 dark:bg-${selectedColor.toLowerCase()}-900`
+                      isSelected
+                        ? isCustomColor
+                          ? 'border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-900'
+                          : `${colorOption.border} bg-${selectedColor.toLowerCase()}-50 dark:bg-${selectedColor.toLowerCase()}-900`
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                     title={iconName}
                   >
                     <IconComponent
                       size={24}
-                      className={selectedIcon === iconName ? colorOption.class : 'text-gray-600 dark:text-gray-400'}
+                      className={isSelected && !isCustomColor ? colorOption.class : 'text-gray-600 dark:text-gray-400'}
+                      style={isSelected && isCustomColor ? { color: customColor } : undefined}
                     />
                   </button>
                 );
@@ -116,19 +121,48 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
               Choose Color
             </label>
             <div className="flex flex-wrap gap-3">
-              {COLOR_OPTIONS.map(({ name: colorName, bg, border }) => (
-                <button
-                  key={colorName}
-                  onClick={() => setSelectedColor(colorName)}
-                  className={`w-10 h-10 rounded-full ${bg} border-4 transition-all ${
-                    selectedColor === colorName
-                      ? 'border-gray-900 dark:border-white scale-110'
-                      : 'border-gray-200 dark:border-gray-600 hover:scale-105'
-                  }`}
-                  title={colorName}
-                  aria-label={colorName}
-                />
-              ))}
+              {COLOR_OPTIONS.map(({ name: colorName, bg }) => {
+                const isSelected = selectedColor === colorName && !customColor;
+                return (
+                  <button
+                    key={colorName}
+                    onClick={() => {
+                      setSelectedColor(colorName);
+                      setCustomColor(null);
+                    }}
+                    className={`w-10 h-10 rounded-full ${bg} border-4 transition-all ${
+                      isSelected
+                        ? 'border-gray-900 dark:border-white scale-110'
+                        : 'border-gray-200 dark:border-gray-600 hover:scale-105'
+                    }`}
+                    title={colorName}
+                    aria-label={colorName}
+                  />
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => colorInputRef.current?.click()}
+                className={`w-10 h-10 rounded-full border-4 transition-all flex items-center justify-center ${
+                  customColor
+                    ? 'border-gray-900 dark:border-white scale-110'
+                    : 'border-gray-200 dark:border-gray-600 hover:scale-105'
+                }`}
+                style={customColor ? { backgroundColor: customColor } : { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)' }}
+                title="Custom Color"
+                aria-label="Custom Color"
+              >
+                {!customColor && <Palette size={20} className="text-white drop-shadow" />}
+              </button>
+              <input
+                ref={colorInputRef}
+                type="color"
+                className="hidden"
+                onChange={(e) => {
+                  setCustomColor(e.target.value);
+                  setSelectedColor(`custom:${e.target.value}`);
+                }}
+              />
             </div>
           </div>
         </div>
