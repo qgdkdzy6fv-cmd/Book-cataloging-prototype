@@ -232,9 +232,9 @@ function AppContent() {
                       {isGuest ? 'Guest Mode (Local Storage)' : `Signed in as ${user?.email}`}
                     </p>
                     {isGuest && (
-                      <div className="flex items-center gap-2 sm:hidden">
-                        <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded whitespace-nowrap">BETA</span>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Export your catalog to avoid losing progress</p>
+                      <div className="flex items-center gap-1.5 sm:hidden">
+                        <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-1.5 py-0.5 rounded whitespace-nowrap">BETA</span>
+                        <p className="text-[10px] text-gray-500 dark:text-gray-400">Export to avoid losing progress</p>
                       </div>
                     )}
                   </div>
