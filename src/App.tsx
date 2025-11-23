@@ -226,7 +226,7 @@ function AppContent() {
               </div>
 
               <div className="flex items-center gap-2">
-                <div ref={settingsRef} className="relative lg:hidden">
+                <div className="relative lg:hidden">
                 <button
                   onClick={() => setSettingsOpen(!settingsOpen)}
                   className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
@@ -316,65 +316,86 @@ function AppContent() {
                 <p className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap hidden lg:block">Export your catalog to avoid losing progress</p>
               </div>
 
-              <div className="hidden lg:flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              <div className="hidden lg:block relative" ref={settingsRef}>
                 <button
-                  onClick={() => setCatalogModalOpen(true)}
-                  className="flex items-center justify-center gap-1.5 sm:gap-2 bg-slate-600 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-slate-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
-                  aria-label="Catalogs"
+                  onClick={() => setSettingsOpen(!settingsOpen)}
+                  className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+                  aria-label="Menu"
                 >
-                  <FolderOpen size={18} className="flex-shrink-0" />
-                  <span className="hidden sm:inline truncate">Catalogs</span>
+                  <Menu size={20} className="text-gray-700 dark:text-gray-200" />
                 </button>
 
-                <button
-                  onClick={() => setImportModalOpen(true)}
-                  className="flex items-center justify-center gap-1.5 sm:gap-2 bg-blue-500 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
-                  aria-label="Import"
-                >
-                  <Upload size={18} className="flex-shrink-0" />
-                  <span className="hidden sm:inline truncate">Import</span>
-                </button>
-
-                {books.length > 0 && (
-                  <button
-                    onClick={() => setExportModalOpen(true)}
-                    className="flex items-center justify-center gap-1.5 sm:gap-2 bg-green-600 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-green-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
-                    aria-label="Export"
-                  >
-                    <Download size={18} className="flex-shrink-0" />
-                    <span className="hidden sm:inline truncate">Export</span>
-                  </button>
+                {settingsOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
+                    <div className="py-2">
+                      <button
+                        onClick={() => {
+                          toggleTheme();
+                          setSettingsOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                      >
+                        {isDark ? <Sun size={18} /> : <Moon size={18} />}
+                        {isDark ? 'Light Mode' : 'Dark Mode'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setCatalogModalOpen(true);
+                          setSettingsOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                      >
+                        <FolderOpen size={18} />
+                        Catalogs
+                      </button>
+                      <button
+                        onClick={() => {
+                          setImportModalOpen(true);
+                          setSettingsOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                      >
+                        <Upload size={18} />
+                        Import
+                      </button>
+                      {books.length > 0 && (
+                        <button
+                          onClick={() => {
+                            setExportModalOpen(true);
+                            setSettingsOpen(false);
+                          }}
+                          className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                        >
+                          <Download size={18} />
+                          Export
+                        </button>
+                      )}
+                      {isGuest ? (
+                        <button
+                          onClick={() => {
+                            setAuthModalOpen(true);
+                            setSettingsOpen(false);
+                          }}
+                          className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                        >
+                          <LogIn size={18} />
+                          Sign In
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            signOut();
+                            setSettingsOpen(false);
+                          }}
+                          className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                        >
+                          <LogOut size={18} />
+                          Sign Out
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 )}
-
-                {isGuest ? (
-                  <button
-                    onClick={() => setAuthModalOpen(true)}
-                    className="flex items-center justify-center gap-1.5 sm:gap-2 bg-blue-600 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
-                    aria-label="Sign In"
-                  >
-                    <LogIn size={18} className="flex-shrink-0" />
-                    <span className="hidden sm:inline truncate">Sign In</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => signOut()}
-                    className="flex items-center justify-center gap-1.5 sm:gap-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm flex-1 sm:flex-initial min-w-0"
-                    aria-label="Sign Out"
-                  >
-                    <LogOut size={18} className="flex-shrink-0" />
-                    <span className="hidden sm:inline truncate">Sign Out</span>
-                  </button>
-                )}
-
-                <button
-                  onClick={toggleTheme}
-                  className="flex p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
-                  aria-label="Toggle dark mode"
-                >
-                  {isDark ? <Sun size={20} className="text-gray-700 dark:text-gray-200" /> : <Moon size={20} className="text-gray-700" />}
-                </button>
-              </div>
               </div>
             </div>
             {isGuest && (
