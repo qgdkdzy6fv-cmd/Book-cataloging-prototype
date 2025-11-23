@@ -1,5 +1,5 @@
-import { Filter, X, Star, CheckCircle, Circle, ChevronDown } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { Filter, X } from 'lucide-react';
+import { useState } from 'react';
 import type { FilterOptions } from '../../types';
 
 interface BookFiltersProps {
@@ -18,20 +18,8 @@ export function BookFilters({
   availableTags,
 }: BookFiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const hasActiveFilters = filters.favorites || filters.read || filters.unread || filters.genre || filters.holiday_category || (filters.tags && filters.tags.length > 0);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const clearFilters = () => {
     onFiltersChange({});
@@ -50,9 +38,9 @@ export function BookFilters({
   };
 
   return (
-    <div ref={dropdownRef} className="relative w-full sm:w-auto">
+    <>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen(true)}
         className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
       >
         <Filter size={18} />
@@ -62,23 +50,35 @@ export function BookFilters({
             Active
           </span>
         )}
-        <ChevronDown size={18} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 right-0 sm:right-auto mt-2 sm:w-96 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50 max-h-[500px] overflow-y-auto">
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-800">
-            <h3 className="font-semibold text-gray-900 dark:text-white">Filter Options</h3>
-            {hasActiveFilters && (
-              <button
-                onClick={clearFilters}
-                className="text-sm text-red-600 hover:text-red-700 flex items-center gap-1"
-              >
-                <X size={16} />
-                Clear All
-              </button>
-            )}
-          </div>
+        <>
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:inset-x-auto sm:w-full sm:max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50 max-h-[80vh] overflow-y-auto">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <h3 className="font-semibold text-gray-900 dark:text-white">Filter Options</h3>
+              <div className="flex items-center gap-2">
+                {hasActiveFilters && (
+                  <button
+                    onClick={clearFilters}
+                    className="text-sm text-red-600 hover:text-red-700 flex items-center gap-1"
+                  >
+                    <X size={16} />
+                    Clear All
+                  </button>
+                )}
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
 
           <div className="p-4 space-y-4">
             <div>
@@ -176,8 +176,9 @@ export function BookFilters({
               </div>
             )}
           </div>
-        </div>
+          </div>
+        </>
       )}
-    </div>
+    </>
   );
 }
