@@ -119,7 +119,7 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Choose Color
             </label>
-            <div className="flex flex-wrap gap-3">
+            <div className="relative flex flex-wrap gap-3">
               {COLOR_OPTIONS.map(({ name: colorName, bg }) => {
                 const isSelected = selectedColor === colorName && !customColor;
                 return (
@@ -156,7 +156,7 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
               <input
                 ref={colorInputRef}
                 type="color"
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 pointer-events-none"
+                className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 pointer-events-none"
                 onChange={(e) => {
                   setCustomColor(e.target.value);
                   setSelectedColor(`custom:${e.target.value}`);
