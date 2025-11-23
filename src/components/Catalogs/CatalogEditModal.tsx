@@ -128,7 +128,7 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Choose Color
             </label>
-            <div className="relative flex flex-wrap gap-3">
+            <div className="grid grid-cols-5 gap-3">
               {COLOR_OPTIONS.map(({ name: colorName, bg }) => {
                 const isSelected = selectedColor === colorName && !customColor;
                 return (
