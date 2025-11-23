@@ -227,17 +227,9 @@ function AppContent() {
                       </button>
                     </div>
                   )}
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">
-                      {isGuest ? 'Guest Mode (Local Storage)' : `Signed in as ${user?.email}`}
-                    </p>
-                    {isGuest && (
-                      <div className="flex items-center gap-1.5 sm:hidden">
-                        <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-1.5 py-0.5 rounded whitespace-nowrap">BETA</span>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-400">Export to avoid losing progress</p>
-                      </div>
-                    )}
-                  </div>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">
+                    {isGuest ? 'Guest Mode (Local Storage)' : `Signed in as ${user?.email}`}
+                  </p>
                 </div>
               </div>
 
@@ -393,6 +385,12 @@ function AppContent() {
               </div>
               </div>
             </div>
+            {isGuest && (
+              <div className="flex items-center justify-center gap-1.5 sm:hidden mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-1.5 py-0.5 rounded whitespace-nowrap">BETA</span>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400">Export to avoid losing progress</p>
+              </div>
+            )}
           </div>
         </div>
       </header>
