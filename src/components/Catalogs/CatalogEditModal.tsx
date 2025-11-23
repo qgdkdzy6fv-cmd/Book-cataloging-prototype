@@ -41,10 +41,9 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
   if (!isOpen) return null;
 
   const handleSave = () => {
-    if (name.trim()) {
-      onSave(name.trim(), selectedIcon, selectedColor);
-      onClose();
-    }
+    const finalName = name.trim() || catalogName;
+    onSave(finalName, selectedIcon, selectedColor);
+    onClose();
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -176,8 +175,7 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
           </button>
           <button
             onClick={handleSave}
-            disabled={!name.trim()}
-            className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+            className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
             Save Changes
           </button>
