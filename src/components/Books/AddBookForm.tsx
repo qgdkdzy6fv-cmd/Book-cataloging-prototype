@@ -249,8 +249,8 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 transition-colors">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div ref={titleInputRef} className="relative">
+      <div className="flex flex-col md:flex-row gap-4 mb-4">
+        <div ref={titleInputRef} className="relative flex-1">
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Title <span className="text-red-500">*</span>
           </label>
@@ -302,7 +302,7 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
           )}
         </div>
 
-        <div ref={authorInputRef} className="relative">
+        <div ref={authorInputRef} className="relative flex-1">
           <label htmlFor="author" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Author <span className="text-red-500">*</span>
           </label>
@@ -347,6 +347,26 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
             </div>
           )}
         </div>
+
+        <div className="flex flex-col justify-end md:pt-6">
+          <button
+            type="submit"
+            disabled={loading || !title.trim() || !author.trim()}
+            className="w-full bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 h-[42px]"
+          >
+            {loading ? (
+              <>
+                <Loader2 size={20} className="animate-spin" />
+                Adding Book...
+              </>
+            ) : (
+              <>
+                <Plus size={20} />
+                Add Book
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -355,25 +375,7 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
         </div>
       )}
 
-      <button
-        type="submit"
-        disabled={loading || !title.trim() || !author.trim()}
-        className="w-full md:w-auto bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-      >
-        {loading ? (
-          <>
-            <Loader2 size={20} className="animate-spin" />
-            Adding Book...
-          </>
-        ) : (
-          <>
-            <Plus size={20} />
-            Add Book
-          </>
-        )}
-      </button>
-
-      <p className="text-sm text-gray-500 mt-3">
+      <p className="text-sm text-gray-500">
         Book details will be automatically enriched with genre, cover image, and other metadata.
       </p>
     </form>
