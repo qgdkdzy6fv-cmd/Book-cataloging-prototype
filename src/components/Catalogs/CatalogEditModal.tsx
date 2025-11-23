@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { X, Library, Book, Bookmark, BookOpen, Heart, Star, Flame, Sparkles, Award, Crown, Palette } from 'lucide-react';
 
 interface CatalogEditModalProps {
@@ -36,7 +36,42 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
   const [selectedIcon, setSelectedIcon] = useState(catalogIcon);
   const [selectedColor, setSelectedColor] = useState(catalogColor);
   const [customColor, setCustomColor] = useState<string | null>(null);
+  const [pickerPosition, setPickerPosition] = useState<{ top?: string; bottom?: string; left?: string; right?: string }>({});
   const colorInputRef = useRef<HTMLInputElement>(null);
+  const colorButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (colorButtonRef.current) {
+      const rect = colorButtonRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      const spaceRight = window.innerWidth - rect.right;
+      const spaceLeft = rect.left;
+
+      const pickerSize = 200;
+      const offset = 8;
+
+      let position: { top?: string; bottom?: string; left?: string; right?: string } = {};
+
+      if (spaceBelow >= pickerSize) {
+        position.top = `${rect.bottom + offset}px`;
+      } else if (spaceAbove >= pickerSize) {
+        position.bottom = `${window.innerHeight - rect.top + offset}px`;
+      } else {
+        position.top = `${rect.bottom + offset}px`;
+      }
+
+      if (spaceRight >= pickerSize / 2) {
+        position.left = `${rect.left + rect.width / 2}px`;
+      } else if (spaceLeft >= pickerSize / 2) {
+        position.right = `${window.innerWidth - rect.right + rect.width / 2}px`;
+      } else {
+        position.left = '50%';
+      }
+
+      setPickerPosition(position);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -140,6 +175,7 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
                 );
               })}
               <button
+                ref={colorButtonRef}
                 type="button"
                 onClick={() => colorInputRef.current?.click()}
                 className={`w-10 h-10 rounded-full border-4 transition-all flex items-center justify-center ${
@@ -156,7 +192,8 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
               <input
                 ref={colorInputRef}
                 type="color"
-                className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 pointer-events-none"
+                className="fixed opacity-0 pointer-events-none -translate-x-1/2"
+                style={pickerPosition}
                 onChange={(e) => {
                   setCustomColor(e.target.value);
                   setSelectedColor(`custom:${e.target.value}`);
