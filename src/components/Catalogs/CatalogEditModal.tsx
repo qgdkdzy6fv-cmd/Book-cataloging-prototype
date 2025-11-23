@@ -152,8 +152,8 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
           </div>
         </div>
 
-        <div className="sticky bottom-0 bg-white dark:bg-gray-800 px-6 py-4">
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-4 -mx-6 px-6 flex justify-center gap-3">
+        <div className="sticky bottom-0 bg-white dark:bg-gray-800 px-6 pb-6">
+          <div className="pt-6 mt-6 border-t border-gray-200 dark:border-gray-700 flex justify-center gap-3">
             <button
               onClick={onClose}
               className="px-6 py-2.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-lg transition-colors font-medium"
