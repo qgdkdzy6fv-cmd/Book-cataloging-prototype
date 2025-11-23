@@ -180,7 +180,7 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 transition-colors pb-[env(safe-area-inset-bottom)]">
       <header className="bg-white dark:bg-gray-800 shadow-md transition-colors pt-[env(safe-area-inset-top)]">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-4 relative">
           <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -310,13 +310,13 @@ function AppContent() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-center sm:gap-3 lg:gap-4">
-              <div className="hidden sm:flex flex-col items-center gap-1">
-                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded whitespace-nowrap">BETA</span>
-                <p className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Export your catalog to avoid losing progress</p>
-              </div>
+            <div className="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1 pointer-events-none">
+              <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded whitespace-nowrap">BETA</span>
+              <p className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Export your catalog to avoid losing progress</p>
+            </div>
 
-              <div className="hidden lg:block absolute right-3 sm:right-6 lg:right-8" ref={settingsRef}>
+            <div className="flex justify-end">
+              <div className="hidden lg:block relative" ref={settingsRef}>
                 <button
                   onClick={() => setSettingsOpen(!settingsOpen)}
                   className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
@@ -398,6 +398,7 @@ function AppContent() {
                 )}
               </div>
             </div>
+
             {isGuest && (
               <div className="flex items-center justify-center gap-1.5 sm:hidden">
                 <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-1.5 py-0.5 rounded whitespace-nowrap">BETA</span>
