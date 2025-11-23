@@ -325,13 +325,13 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                 <button
                   onClick={() => setShowUploadModal(true)}
                   disabled={uploadingImage || resettingImage}
-                  className="flex-1 flex items-center justify-center bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center justify-center bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   title="Upload Image"
                 >
                   {uploadingImage ? (
-                    <Upload size={18} className="animate-pulse" />
+                    <Upload size={16} className="animate-pulse" />
                   ) : (
-                    <ImageIcon size={18} />
+                    <ImageIcon size={16} />
                   )}
                 </button>
               </div>
