@@ -128,7 +128,7 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Choose Color
             </label>
-            <div className="grid grid-cols-5 gap-3">
+            <div className="grid grid-cols-5 gap-3 justify-items-center">
               {COLOR_OPTIONS.map(({ name: colorName, bg }) => {
                 const isSelected = selectedColor === colorName && !customColor;
                 return (
@@ -152,7 +152,7 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
           </div>
         </div>
 
-        <div className="sticky bottom-0 bg-gray-50 dark:bg-gray-900 px-6 py-4 flex justify-center gap-3 border-t border-gray-200 dark:border-gray-700">
+        <div className="sticky bottom-0 bg-white dark:bg-gray-800 px-6 py-4 flex justify-center gap-3 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={onClose}
             className="px-6 py-2.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-lg transition-colors font-medium"
@@ -163,7 +163,7 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
             onClick={handleSave}
             className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
-            Save Changes
+            Save
           </button>
         </div>
       </div>
