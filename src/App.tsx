@@ -34,7 +34,8 @@ function AppContent() {
   const [bookDetailOpen, setBookDetailOpen] = useState(false);
   const [catalogEditOpen, setCatalogEditOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const settingsRef = useRef<HTMLDivElement>(null);
+  const mobileSettingsRef = useRef<HTMLDivElement>(null);
+  const desktopSettingsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadCatalogs();
@@ -42,7 +43,10 @@ function AppContent() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
+      if (mobileSettingsRef.current && !mobileSettingsRef.current.contains(event.target as Node)) {
+        setSettingsOpen(false);
+      }
+      if (desktopSettingsRef.current && !desktopSettingsRef.current.contains(event.target as Node)) {
         setSettingsOpen(false);
       }
     };
@@ -226,7 +230,7 @@ function AppContent() {
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="relative lg:hidden" ref={settingsRef}>
+                <div className="relative lg:hidden" ref={mobileSettingsRef}>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -319,7 +323,7 @@ function AppContent() {
             </div>
 
             <div className="flex justify-end">
-              <div className="hidden lg:block relative" ref={settingsRef}>
+              <div className="hidden lg:block relative" ref={desktopSettingsRef}>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
