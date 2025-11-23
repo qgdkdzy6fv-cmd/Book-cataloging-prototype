@@ -38,7 +38,7 @@ const COLOR_OPTIONS = [
   { name: 'Yellow', hex: '#ca8a04', class: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-600', border: 'border-yellow-600' },
   { name: 'Teal', hex: '#0d9488', class: 'text-teal-600 dark:text-teal-400', bg: 'bg-teal-600', border: 'border-teal-600' },
   { name: 'Cyan', hex: '#0891b2', class: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-600', border: 'border-cyan-600' },
-  { name: 'Emerald', hex: '#059669', class: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-600', border: 'border-emerald-600' },
+  { name: 'Slate', hex: '#475569', class: 'text-slate-600 dark:text-slate-400', bg: 'bg-slate-600', border: 'border-slate-600' },
 ];
 
 export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, catalogColor = 'Blue', onSave }: CatalogEditModalProps) {
