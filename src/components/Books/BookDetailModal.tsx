@@ -338,16 +338,6 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
                     <RotateCcw size={18} />
                   )}
                 </button>
-                {editedBook.cover_image_url && (
-                  <button
-                    onClick={handleRemoveImage}
-                    disabled={loading || uploadingImage || resettingImage}
-                    className="flex-1 flex items-center justify-center border border-red-600 text-red-600 p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    title="Remove Image"
-                  >
-                    <X size={18} />
-                  </button>
-                )}
               </div>
             )}
           </div>
