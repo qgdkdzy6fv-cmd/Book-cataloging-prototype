@@ -233,7 +233,12 @@ function AppContent() {
                 </div>
               </div>
 
-              <div ref={settingsRef} className="relative lg:hidden">
+              <div className="flex items-center gap-2">
+                <div className="flex sm:hidden flex-col items-center gap-1">
+                  <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded whitespace-nowrap">BETA</span>
+                </div>
+
+                <div ref={settingsRef} className="relative lg:hidden">
                 <button
                   onClick={() => setSettingsOpen(!settingsOpen)}
                   className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
@@ -314,6 +319,7 @@ function AppContent() {
                   </div>
                 )}
               </div>
+              </div>
             </div>
 
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 lg:gap-4">
@@ -380,11 +386,6 @@ function AppContent() {
                 >
                   {isDark ? <Sun size={20} className="text-gray-700 dark:text-gray-200" /> : <Moon size={20} className="text-gray-700" />}
                 </button>
-              </div>
-
-              <div className="flex sm:hidden items-center justify-center gap-2 text-center">
-                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded whitespace-nowrap">BETA</span>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Export your catalog to avoid losing progress</p>
               </div>
               </div>
             </div>
