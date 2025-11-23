@@ -40,19 +40,13 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
 
   useEffect(() => {
     if (isOpen) {
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.overflow = '';
-        window.scrollTo(0, scrollY);
-      };
+    } else {
+      document.body.style.overflow = 'unset';
     }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [isOpen]);
 
   if (!isOpen || !displayBook) return null;
@@ -266,8 +260,8 @@ export function BookDetailModal({ book, isOpen, onClose, onUpdate }: BookDetailM
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full m-4 relative transition-colors max-h-[calc(100vh-2rem)] overflow-y-auto"
-        style={{ overflowX: 'hidden', maxWidth: '100%', WebkitOverflowScrolling: 'touch' }}
+        className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full m-4 relative transition-colors max-h-[calc(100vh-2rem)] overflow-y-auto touch-pan-y"
+        style={{ overflowX: 'hidden', maxWidth: '100%' }}
         onClick={(e) => e.stopPropagation()}
       >
         <button
