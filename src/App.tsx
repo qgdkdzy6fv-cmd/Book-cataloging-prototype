@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Library, LogIn, LogOut, Download, Upload, Search, FolderOpen, Edit2, Sun, Moon, Menu, Book, Bookmark, BookOpen, Heart, Star, Flame, Sparkles, Award, Crown } from 'lucide-react';
+import { Library, LogIn, LogOut, Download, Upload, Search, FolderOpen, Edit2, Sun, Moon, Menu, Book as BookIcon, Bookmark, BookOpen, Heart, Star, Flame, Sparkles, Award, Crown } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { useTheme } from './contexts/ThemeContext';
 import { AuthModal } from './components/Auth/AuthModal';
@@ -186,7 +186,7 @@ function AppContent() {
                 {(() => {
                   const iconName = activeCatalog?.icon || 'Library';
                   const iconMap: { [key: string]: any } = {
-                    Library, Book, Bookmark, BookOpen, Heart, Star, Flame, Sparkles, Award, Crown
+                    Library, Book: BookIcon, Bookmark, BookOpen, Heart, Star, Flame, Sparkles, Award, Crown
                   };
                   const IconComponent = iconMap[iconName] || Library;
                   return <IconComponent size={28} className="text-blue-600 dark:text-blue-400 flex-shrink-0 sm:w-8 sm:h-8" />;
