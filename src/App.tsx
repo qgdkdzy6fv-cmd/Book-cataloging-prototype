@@ -310,13 +310,13 @@ function AppContent() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 lg:gap-4">
-              <div className="hidden sm:flex flex-col items-center gap-1 lg:order-first">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-center sm:gap-3 lg:gap-4">
+              <div className="hidden sm:flex flex-col items-center gap-1">
                 <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded whitespace-nowrap">BETA</span>
-                <p className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap hidden lg:block">Export your catalog to avoid losing progress</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Export your catalog to avoid losing progress</p>
               </div>
 
-              <div className="hidden lg:block relative" ref={settingsRef}>
+              <div className="hidden lg:block absolute right-3 sm:right-6 lg:right-8" ref={settingsRef}>
                 <button
                   onClick={() => setSettingsOpen(!settingsOpen)}
                   className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
