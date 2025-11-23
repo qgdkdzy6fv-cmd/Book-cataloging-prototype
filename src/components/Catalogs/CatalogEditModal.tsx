@@ -192,7 +192,7 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
               <input
                 ref={colorInputRef}
                 type="color"
-                className="fixed opacity-0 pointer-events-none -translate-x-1/2"
+                className="fixed z-[60] w-12 h-12 cursor-pointer border-0"
                 style={pickerPosition}
                 onChange={(e) => {
                   setCustomColor(e.target.value);
