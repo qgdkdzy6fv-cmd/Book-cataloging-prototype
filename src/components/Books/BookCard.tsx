@@ -42,7 +42,7 @@ export function BookCard({ book, onClick, onToggleFavorite, onToggleRead }: Book
 
         <button
           onClick={handleFavoriteClick}
-          className={`absolute top-2 right-2 p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:scale-110 transition-all ${
+          className={`absolute top-2 right-2 p-3 rounded-full bg-white dark:bg-gray-800 shadow-md hover:scale-110 transition-all min-w-[44px] min-h-[44px] flex items-center justify-center ${
             book.is_favorite ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
           }`}
           aria-label={book.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
@@ -55,7 +55,7 @@ export function BookCard({ book, onClick, onToggleFavorite, onToggleRead }: Book
 
         <button
           onClick={handleReadClick}
-          className={`absolute top-2 left-2 p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:scale-110 transition-all ${
+          className={`absolute top-2 left-2 p-3 rounded-full bg-white dark:bg-gray-800 shadow-md hover:scale-110 transition-all min-w-[44px] min-h-[44px] flex items-center justify-center ${
             book.is_read ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
           }`}
           aria-label={book.is_read ? 'Mark as unread' : 'Mark as read'}
