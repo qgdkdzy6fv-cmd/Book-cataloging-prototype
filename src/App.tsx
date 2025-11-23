@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Library, LogIn, LogOut, Download, Upload, Search, FolderOpen, Edit2, Check, X, Sun, Moon, Settings } from 'lucide-react';
+import { Library, LogIn, LogOut, Download, Upload, Search, FolderOpen, Edit2, Check, X, Sun, Moon, Menu } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { useTheme } from './contexts/ThemeContext';
 import { AuthModal } from './components/Auth/AuthModal';
@@ -237,9 +237,9 @@ function AppContent() {
                 <button
                   onClick={() => setSettingsOpen(!settingsOpen)}
                   className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
-                  aria-label="Settings"
+                  aria-label="Menu"
                 >
-                  <Settings size={18} className="text-gray-700 dark:text-gray-200" />
+                  <Menu size={18} className="text-gray-700 dark:text-gray-200" />
                 </button>
 
                 {settingsOpen && (
