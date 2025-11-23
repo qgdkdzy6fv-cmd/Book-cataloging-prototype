@@ -50,7 +50,7 @@ export function BookFilters({
   };
 
   return (
-    <div ref={dropdownRef} className="relative inline-block w-full sm:w-auto">
+    <div ref={dropdownRef} className="relative w-full sm:w-auto">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
@@ -66,7 +66,7 @@ export function BookFilters({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 right-4 sm:right-auto mt-2 w-auto sm:w-96 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50 max-h-[500px] overflow-y-auto">
+        <div className="absolute left-0 right-0 sm:right-auto mt-2 sm:w-96 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50 max-h-[500px] overflow-y-auto">
           <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-800">
             <h3 className="font-semibold text-gray-900 dark:text-white">Filter Options</h3>
             {hasActiveFilters && (
