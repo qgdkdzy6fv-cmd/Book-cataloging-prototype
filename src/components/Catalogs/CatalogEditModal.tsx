@@ -107,9 +107,9 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, ca
                     className={`p-3 rounded-lg border-2 transition-all flex items-center justify-center ${
                       isSelected
                         ? isCustomColor
-                          ? 'border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-900'
-                          : `${colorOption.border} bg-${selectedColor.toLowerCase()}-50 dark:bg-${selectedColor.toLowerCase()}-900`
-                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                          ? 'border-gray-900 dark:border-white bg-gray-100 dark:bg-gray-700'
+                          : `${colorOption.border} bg-gray-100 dark:bg-gray-700`
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-800'
                     }`}
                     title={iconName}
                   >
