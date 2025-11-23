@@ -226,9 +226,12 @@ function AppContent() {
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="relative lg:hidden">
+                <div className="relative lg:hidden" ref={settingsRef}>
                 <button
-                  onClick={() => setSettingsOpen(!settingsOpen)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSettingsOpen(!settingsOpen);
+                  }}
                   className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
                   aria-label="Menu"
                 >
@@ -236,7 +239,7 @@ function AppContent() {
                 </button>
 
                 {settingsOpen && (
-                  <div ref={settingsRef} className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
                     <div className="py-2">
                       <button
                         onClick={() => {
@@ -316,9 +319,12 @@ function AppContent() {
             </div>
 
             <div className="flex justify-end">
-              <div className="hidden lg:block relative">
+              <div className="hidden lg:block relative" ref={settingsRef}>
                 <button
-                  onClick={() => setSettingsOpen(!settingsOpen)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSettingsOpen(!settingsOpen);
+                  }}
                   className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
                   aria-label="Menu"
                 >
@@ -326,7 +332,7 @@ function AppContent() {
                 </button>
 
                 {settingsOpen && (
-                  <div ref={settingsRef} className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
                     <div className="py-2">
                       <button
                         onClick={() => {
