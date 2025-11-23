@@ -6,7 +6,8 @@ interface CatalogEditModalProps {
   onClose: () => void;
   catalogName: string;
   catalogIcon: string;
-  onSave: (name: string, icon: string) => void;
+  catalogColor?: string;
+  onSave: (name: string, icon: string, color: string) => void;
 }
 
 const ICON_OPTIONS = [
@@ -22,15 +23,27 @@ const ICON_OPTIONS = [
   { name: 'Crown', component: Crown },
 ];
 
-export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, onSave }: CatalogEditModalProps) {
+const COLOR_OPTIONS = [
+  { name: 'Blue', class: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-600', border: 'border-blue-600' },
+  { name: 'Green', class: 'text-green-600 dark:text-green-400', bg: 'bg-green-600', border: 'border-green-600' },
+  { name: 'Red', class: 'text-red-600 dark:text-red-400', bg: 'bg-red-600', border: 'border-red-600' },
+  { name: 'Orange', class: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-600', border: 'border-orange-600' },
+  { name: 'Pink', class: 'text-pink-600 dark:text-pink-400', bg: 'bg-pink-600', border: 'border-pink-600' },
+  { name: 'Teal', class: 'text-teal-600 dark:text-teal-400', bg: 'bg-teal-600', border: 'border-teal-600' },
+  { name: 'Yellow', class: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-600', border: 'border-yellow-600' },
+  { name: 'Cyan', class: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-600', border: 'border-cyan-600' },
+];
+
+export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, catalogColor = 'Blue', onSave }: CatalogEditModalProps) {
   const [name, setName] = useState(catalogName);
   const [selectedIcon, setSelectedIcon] = useState(catalogIcon);
+  const [selectedColor, setSelectedColor] = useState(catalogColor);
 
   if (!isOpen) return null;
 
   const handleSave = () => {
     if (name.trim()) {
-      onSave(name.trim(), selectedIcon);
+      onSave(name.trim(), selectedIcon, selectedColor);
       onClose();
     }
   };
@@ -45,7 +58,7 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, on
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Edit Catalog</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Edit Catalog Name</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
@@ -75,22 +88,46 @@ export function CatalogEditModal({ isOpen, onClose, catalogName, catalogIcon, on
               Choose Icon
             </label>
             <div className="grid grid-cols-5 gap-3">
-              {ICON_OPTIONS.map(({ name: iconName, component: IconComponent }) => (
+              {ICON_OPTIONS.map(({ name: iconName, component: IconComponent }) => {
+                const colorOption = COLOR_OPTIONS.find(c => c.name === selectedColor) || COLOR_OPTIONS[0];
+                return (
+                  <button
+                    key={iconName}
+                    onClick={() => setSelectedIcon(iconName)}
+                    className={`p-3 rounded-lg border-2 transition-all ${
+                      selectedIcon === iconName
+                        ? `${colorOption.border} bg-${selectedColor.toLowerCase()}-50 dark:bg-${selectedColor.toLowerCase()}-900`
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                    }`}
+                    title={iconName}
+                  >
+                    <IconComponent
+                      size={24}
+                      className={selectedIcon === iconName ? colorOption.class : 'text-gray-600 dark:text-gray-400'}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Choose Color
+            </label>
+            <div className="flex flex-wrap gap-3">
+              {COLOR_OPTIONS.map(({ name: colorName, bg, border }) => (
                 <button
-                  key={iconName}
-                  onClick={() => setSelectedIcon(iconName)}
-                  className={`p-3 rounded-lg border-2 transition-all ${
-                    selectedIcon === iconName
-                      ? 'border-blue-600 bg-blue-50 dark:bg-blue-900 dark:border-blue-400'
-                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                  key={colorName}
+                  onClick={() => setSelectedColor(colorName)}
+                  className={`w-10 h-10 rounded-full ${bg} border-4 transition-all ${
+                    selectedColor === colorName
+                      ? 'border-gray-900 dark:border-white scale-110'
+                      : 'border-gray-200 dark:border-gray-600 hover:scale-105'
                   }`}
-                  title={iconName}
-                >
-                  <IconComponent
-                    size={24}
-                    className={selectedIcon === iconName ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}
-                  />
-                </button>
+                  title={colorName}
+                  aria-label={colorName}
+                />
               ))}
             </div>
           </div>

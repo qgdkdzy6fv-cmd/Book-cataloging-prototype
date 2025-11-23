@@ -11,7 +11,8 @@ export const catalogService = {
       const catalogs = stored ? JSON.parse(stored) : [];
       return catalogs.map((catalog: Catalog) => ({
         ...catalog,
-        icon: catalog.icon || 'Library'
+        icon: catalog.icon || 'Library',
+        color: catalog.color || 'Blue'
       }));
     } catch (error) {
       console.error('Error reading catalogs from localStorage:', error);
@@ -61,13 +62,14 @@ export const catalogService = {
     return data;
   },
 
-  createLocalCatalog(name: string, description: string | null, icon: string = 'Library'): Catalog {
+  createLocalCatalog(name: string, description: string | null, icon: string = 'Library', color: string = 'Blue'): Catalog {
     const catalogs = this.getLocalCatalogs();
     const newCatalog: Catalog = {
       id: crypto.randomUUID(),
       user_id: null,
       name,
       icon,
+      color,
       description,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -83,9 +85,9 @@ export const catalogService = {
     return newCatalog;
   },
 
-  async createCatalog(userId: string | null, name: string, description: string | null, icon: string = 'Library'): Promise<Catalog> {
+  async createCatalog(userId: string | null, name: string, description: string | null, icon: string = 'Library', color: string = 'Blue'): Promise<Catalog> {
     if (!userId || !supabase) {
-      return this.createLocalCatalog(name, description, icon);
+      return this.createLocalCatalog(name, description, icon, color);
     }
 
     const { data, error } = await supabase
@@ -94,6 +96,7 @@ export const catalogService = {
         user_id: userId,
         name,
         icon,
+        color,
         description,
       })
       .select()
@@ -103,7 +106,7 @@ export const catalogService = {
     return data;
   },
 
-  async updateCatalog(userId: string | null, catalogId: string, name: string, description: string | null, icon?: string): Promise<Catalog> {
+  async updateCatalog(userId: string | null, catalogId: string, name: string, description: string | null, icon?: string, color?: string): Promise<Catalog> {
     if (!userId || !supabase) {
       const catalogs = this.getLocalCatalogs();
       const index = catalogs.findIndex(c => c.id === catalogId);
@@ -114,6 +117,7 @@ export const catalogService = {
         name,
         description,
         ...(icon && { icon }),
+        ...(color && { color }),
         updated_at: new Date().toISOString(),
       };
 
@@ -123,6 +127,7 @@ export const catalogService = {
 
     const updateData: any = { name, description };
     if (icon) updateData.icon = icon;
+    if (color) updateData.color = color;
 
     const { data, error } = await supabase
       .from('catalogs')

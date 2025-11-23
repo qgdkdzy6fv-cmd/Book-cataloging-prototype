@@ -107,8 +107,8 @@ function AppContent() {
     catalogService.setActiveCatalogId(newCatalog.id);
   };
 
-  const handleUpdateCatalog = async (catalogId: string, name: string, description: string | null, icon?: string) => {
-    await catalogService.updateCatalog(user?.id || null, catalogId, name, description, icon);
+  const handleUpdateCatalog = async (catalogId: string, name: string, description: string | null, icon?: string, color?: string) => {
+    await catalogService.updateCatalog(user?.id || null, catalogId, name, description, icon, color);
     await loadCatalogs();
   };
 
@@ -117,7 +117,7 @@ function AppContent() {
     await loadCatalogs();
   };
 
-  const handleSaveCatalogEdit = async (name: string, icon: string) => {
+  const handleSaveCatalogEdit = async (name: string, icon: string, color: string) => {
     if (!activeCatalogId) return;
 
     try {
@@ -128,7 +128,8 @@ function AppContent() {
           activeCatalogId,
           name,
           activeCatalog.description,
-          icon
+          icon,
+          color
         );
         await loadCatalogs();
       }
@@ -185,11 +186,23 @@ function AppContent() {
               <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                 {(() => {
                   const iconName = activeCatalog?.icon || 'Library';
+                  const colorName = activeCatalog?.color || 'Blue';
                   const iconMap: { [key: string]: any } = {
                     Library, Book: BookIcon, Bookmark, BookOpen, Heart, Star, Flame, Sparkles, Award, Crown
                   };
+                  const colorMap: { [key: string]: string } = {
+                    Blue: 'text-blue-600 dark:text-blue-400',
+                    Green: 'text-green-600 dark:text-green-400',
+                    Red: 'text-red-600 dark:text-red-400',
+                    Orange: 'text-orange-600 dark:text-orange-400',
+                    Pink: 'text-pink-600 dark:text-pink-400',
+                    Teal: 'text-teal-600 dark:text-teal-400',
+                    Yellow: 'text-yellow-600 dark:text-yellow-400',
+                    Cyan: 'text-cyan-600 dark:text-cyan-400',
+                  };
                   const IconComponent = iconMap[iconName] || Library;
-                  return <IconComponent size={28} className="text-blue-600 dark:text-blue-400 flex-shrink-0 sm:w-8 sm:h-8" />;
+                  const colorClass = colorMap[colorName] || colorMap.Blue;
+                  return <IconComponent size={28} className={`${colorClass} flex-shrink-0 sm:w-8 sm:h-8`} />;
                 })()}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1 sm:gap-2 min-w-0">
@@ -458,6 +471,7 @@ function AppContent() {
         onClose={() => setCatalogEditOpen(false)}
         catalogName={activeCatalog?.name || ''}
         catalogIcon={activeCatalog?.icon || 'Library'}
+        catalogColor={activeCatalog?.color || 'Blue'}
         onSave={handleSaveCatalogEdit}
       />
     </div>
