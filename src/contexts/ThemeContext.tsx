@@ -17,9 +17,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (isDark) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
+      document.querySelector('meta[name="theme-color"][media="(prefers-color-scheme: light)"]')?.setAttribute('content', '#111827');
+      document.querySelector('meta[name="theme-color"][media="(prefers-color-scheme: dark)"]')?.setAttribute('content', '#111827');
     } else {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
+      document.querySelector('meta[name="theme-color"][media="(prefers-color-scheme: light)"]')?.setAttribute('content', '#f8fafc');
+      document.querySelector('meta[name="theme-color"][media="(prefers-color-scheme: dark)"]')?.setAttribute('content', '#f8fafc');
     }
   }, [isDark]);
 

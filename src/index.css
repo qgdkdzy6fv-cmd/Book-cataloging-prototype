@@ -2,11 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  background-color: #f8fafc;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+html.dark {
+  background-color: #111827;
+}
+
 body {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 ::-webkit-scrollbar {
