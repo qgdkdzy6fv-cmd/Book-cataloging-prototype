@@ -287,27 +287,33 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
         <label htmlFor="isbn" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Search by ISBN
         </label>
-        <div className="flex gap-2">
+        <div className="relative">
           <input
             id="isbn"
             type="text"
             value={isbn}
             onChange={(e) => setIsbn(e.target.value)}
-            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                searchByIsbn();
+              }
+            }}
+            className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
             placeholder="Enter ISBN number"
           />
           <button
             type="button"
             onClick={searchByIsbn}
             disabled={loadingIsbn || !isbn.trim()}
-            className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            aria-label="Search by ISBN"
           >
             {loadingIsbn ? (
               <Loader2 size={20} className="animate-spin" />
             ) : (
               <Search size={20} />
             )}
-            Search
           </button>
         </div>
       </div>
