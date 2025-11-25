@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus, Loader2, Search } from 'lucide-react';
 import { bookService } from '../../services/bookService';
 import { useAuth } from '../../contexts/AuthContext';
 import type { BookFormData } from '../../types';
@@ -10,9 +10,11 @@ interface AddBookFormProps {
 }
 
 export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
+  const [isbn, setIsbn] = useState('');
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingIsbn, setLoadingIsbn] = useState(false);
   const [error, setError] = useState('');
   const [titleSuggestions, setTitleSuggestions] = useState<Array<{ title: string; author: string }>>([]);
   const [showTitleSuggestions, setShowTitleSuggestions] = useState(false);
@@ -189,6 +191,38 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
     }
   };
 
+  const searchByIsbn = async () => {
+    if (!isbn.trim()) return;
+
+    setLoadingIsbn(true);
+    setError('');
+
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(isbn.trim())}`
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch book data');
+      }
+
+      const data = await response.json();
+
+      if (data.items && data.items.length > 0) {
+        const book = data.items[0].volumeInfo;
+        setTitle(book.title || '');
+        setAuthor(book.authors?.[0] || '');
+      } else {
+        setError('No book found with this ISBN');
+      }
+    } catch (err) {
+      console.error('Error fetching book by ISBN:', err);
+      setError('Failed to fetch book data');
+    } finally {
+      setLoadingIsbn(false);
+    }
+  };
+
   const handleSelectTitle = (selectedBook: { title: string; author: string }) => {
     setTitle(selectedBook.title);
     setAuthor(selectedBook.author);
@@ -249,6 +283,35 @@ export function AddBookForm({ onBookAdded, catalogId }: AddBookFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 transition-colors">
+      <div className="mb-4">
+        <label htmlFor="isbn" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Search by ISBN
+        </label>
+        <div className="flex gap-2">
+          <input
+            id="isbn"
+            type="text"
+            value={isbn}
+            onChange={(e) => setIsbn(e.target.value)}
+            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
+            placeholder="Enter ISBN number"
+          />
+          <button
+            type="button"
+            onClick={searchByIsbn}
+            disabled={loadingIsbn || !isbn.trim()}
+            className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+          >
+            {loadingIsbn ? (
+              <Loader2 size={20} className="animate-spin" />
+            ) : (
+              <Search size={20} />
+            )}
+            Search
+          </button>
+        </div>
+      </div>
+
       <div className="flex flex-col md:flex-row gap-4 mb-4">
         <div ref={titleInputRef} className="relative flex-1">
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
