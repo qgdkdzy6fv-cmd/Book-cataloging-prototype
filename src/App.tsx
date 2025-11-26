@@ -419,7 +419,7 @@ function AppContent() {
         <AddBookForm onBookAdded={loadBooks} catalogId={activeCatalogId} />
 
         {books.length > 0 && (
-          <>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors">
             <div className="mb-6">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
@@ -452,18 +452,24 @@ function AppContent() {
               </p>
             </div>
 
-            <p className="text-gray-600 dark:text-gray-300 mb-4 sm:hidden">
+            <p className="text-gray-600 dark:text-gray-300 mb-6 sm:hidden">
               Showing {filteredBooks.length} of {books.length} book{books.length !== 1 ? 's' : ''}
             </p>
-          </>
+
+            {loading ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 dark:text-gray-400">Loading books...</p>
+              </div>
+            ) : (
+              <BookGrid books={filteredBooks} onBookClick={handleBookClick} onToggleFavorite={handleToggleFavorite} onToggleRead={handleToggleRead} />
+            )}
+          </div>
         )}
 
-        {loading ? (
+        {!books.length && !loading && (
           <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400">Loading books...</p>
+            <p className="text-gray-500 dark:text-gray-400">No books yet. Add your first book above!</p>
           </div>
-        ) : (
-          <BookGrid books={filteredBooks} onBookClick={handleBookClick} onToggleFavorite={handleToggleFavorite} onToggleRead={handleToggleRead} />
         )}
       </main>
 
